@@ -23,58 +23,61 @@ import kotlin.system.exitProcess
 
 
 fun main(args: Array<String>) {
-//    FFmpegUtil.test()
 
-    for (i in 2 until 7) {
-        FFmpegImgToVideoUtil.bgIndex = i + 1
+
+    for (i in 4 until 5) {
         val count = if (i == 6) {
             177
         } else {
             150
         }
-        FFmpegImgToVideoUtil.startSortIndex = (i * 150) + 1
-        FFmpegImgToVideoUtil.endSortIndex = FFmpegImgToVideoUtil.startSortIndex + count
+        runBlocking {
+            val ffmpegimgtovideoutilEN = FFmpegImgToVideoUtil3()
+            val ffmpegimgtovideoutilJP = FFmpegImgToVideoUtil3()
+            for (fFmpegImgToVideoUtil3 in arrayOf(ffmpegimgtovideoutilEN, ffmpegimgtovideoutilJP)) {
+                fFmpegImgToVideoUtil3.bgIndex = i + 1
+                fFmpegImgToVideoUtil3.startSortIndex = (i * 150) + 1
+                fFmpegImgToVideoUtil3.endSortIndex = fFmpegImgToVideoUtil3.startSortIndex + count
+            }
 
-        FFmpegImgToVideoUtil.isEnglish = true
-        FFmpegImgToVideoUtil.outputFileName =
-            "output(${FFmpegImgToVideoUtil.startSortIndex}-${FFmpegImgToVideoUtil.endSortIndex - 1})-EN.mp4"
-        FFmpegImgToVideoUtil.main()
-
-        FFmpegImgToVideoUtil.isEnglish = false
-        FFmpegImgToVideoUtil.outputFileName =
-            "output(${FFmpegImgToVideoUtil.startSortIndex}-${FFmpegImgToVideoUtil.endSortIndex - 1})-EN-JP.mp4"
-        FFmpegImgToVideoUtil.main()
+            launch(Dispatchers.IO) {
+                ffmpegimgtovideoutilEN.isEnglish = true
+                ffmpegimgtovideoutilEN.outputFileName =
+                    "output(${ffmpegimgtovideoutilEN.startSortIndex}-${ffmpegimgtovideoutilEN.endSortIndex - 1})-EN.mp4"
+                ffmpegimgtovideoutilEN.main()
+            }
+            launch(Dispatchers.IO) {
+                ffmpegimgtovideoutilJP.isEnglish = false
+                ffmpegimgtovideoutilJP.outputFileName =
+                    "output(${ffmpegimgtovideoutilJP.startSortIndex}-${ffmpegimgtovideoutilJP.endSortIndex - 1})-EN-JP.mp4"
+                ffmpegimgtovideoutilJP.main()
+            }
+        }
     }
 
-//    FFmpegImgToVideoUtil.main()
-
-//    val videoList = listOf(
-//        "/Users/lingodeer-yxg/Desktop/FFmpegUtil/output/enpal-片头.mp4",
-//        "/Users/lingodeer-yxg/Desktop/FFmpegUtil/output/output-formatted.mp4",
-//        "/Users/lingodeer-yxg/Desktop/FFmpegUtil/output/enpal-片尾.mp4"
-//    )
-//
-//    Mp4ParseUtil.mergeVideo(videoList, "/Users/lingodeer-yxg/Desktop/FFmpegUtil/output/", "output-full.mp4")
-//    FFmpegUtil2.processImg()
 }
 
-object FFmpegImgToVideoUtil {
+class FFmpegImgToVideoUtil3 {
     var bgIndex = 1
-    var isDebug = false
+    private var isDebug = false
+    var hasCompressedAudio = false
     var isEnglish = false
-    var workingDir = ""
-    var workingTempDir = ""
+    private var workingDir = ""
+    private var workingTempDir = ""
 
     var functionIndex = 2
     var repeatCount = 3
-    var repeatGapTime = 3
-    var sentenceGapTime = 4
+    private var repeatGapTime = 3
+    private var sentenceGapTime = 4
     var startSortIndex = 1
     var endSortIndex = 151
 
-    var outputFileName = "output(1-150).mp4"
-    var inputAudioDirPath = "/Users/lingodeer-yxg/Downloads/YT-Ref-compressed"
-    var inputAudioSortExcelPath = "/Users/lingodeer-yxg/Desktop/FFmpegUtil/1077-with-Japanese(排序后).xlsx"
+    var outputFileName = "output(1-150)"
+    private var inputAudioDirPath = "/Users/lingodeer-yxg/Downloads/YT-Ref-compressed"
+    private var inputAudioSortExcelPath = "/Users/lingodeer-yxg/Desktop/FFmpegUtil/1077-with-Japanese(排序后).xlsx"
+
+    private val repeatGameTimeFile get() = File("$workingTempDir/gap_time/$repeatGapTime.mp3")
+    private val sentenceGapTimeFile get() = File("$workingTempDir/gap_time/$sentenceGapTime.mp3")
 
     init {
         val protocol = javaClass.getResource("")?.protocol ?: ""
@@ -91,7 +94,6 @@ object FFmpegImgToVideoUtil {
                         .toURI()
                 ).parent
             }
-        workingTempDir = "$workingDir/temp"
         println("workingDir = $workingDir")
         if (workingDir.contains(" ")) {
             println("workingDir不能包含空格")
@@ -99,24 +101,10 @@ object FFmpegImgToVideoUtil {
         }
     }
 
-    fun test() {
-        val ffprobe = FFprobe("$workingDir/library/ffprobe")
-        ffprobe.probe("/Users/lingodeer-yxg/Downloads/片头.mp4").format.apply {
-            println("this.size = " + this.size)
-            println("this.bit_rate = " + this.bit_rate)
-            println("this.format_long_name = " + this.format_long_name)
-            println("this.format_name = " + this.format_name)
-        }
-
-        ffprobe.probe("/Users/lingodeer-yxg/Desktop/FFmpegUtil/temp/output/03.mp4").format.apply {
-            println("this.size = " + this.size)
-            println("this.bit_rate = " + this.bit_rate)
-            println("this.format_long_name = " + this.format_long_name)
-            println("this.format_name = " + this.format_name)
-        }
-    }
-
     fun main() {
+        workingTempDir = "$workingDir/temp/$outputFileName"
+        println("workingTempDir = $workingTempDir")
+
 //        val scanner = Scanner(System.`in`)
 //        println("1. 多个音频文件合并成一个音频文件")
 //        println("2. 多个音频文件和图片合并视频文件")
@@ -153,14 +141,13 @@ object FFmpegImgToVideoUtil {
 //        println("\n请输入每个句子之间的时间间隔：")
 //        sentenceGapTime = scanner.nextLine().toInt()
 //        println("sentenceGapTime = ${sentenceGapTime}s")
-
         combineMedia()
     }
 
     /**
      * 合成音频
      */
-    fun combineMedia() {
+    private fun combineMedia() {
         if (inputAudioSortExcelPath.isNotEmpty()) {
             EasyExcel.read(
                 File(inputAudioSortExcelPath),
@@ -169,7 +156,6 @@ object FFmpegImgToVideoUtil {
                     val sortedExcelDataList = ArrayList<SortedExcelData>()
                     override fun invoke(data: SortedExcelData, context: AnalysisContext) {
                         sortedExcelDataList.add(data)
-                        println(data.SENTENCE)
                     }
 
                     override fun doAfterAllAnalysed(context: AnalysisContext) {
@@ -186,97 +172,42 @@ object FFmpegImgToVideoUtil {
      * 合成视频
      */
     fun combineVideoWithSortedList(sortedExcelDataList: ArrayList<SortedExcelData>) {
-        var startTime = System.currentTimeMillis()
+        val startTime = System.currentTimeMillis()
         val inputAudioImgDirPath = "$workingTempDir/output_img"
 
         val ffprobe = FFprobe("$workingDir/library/ffprobe")
 
         val cmdPath = "$workingDir/library/ffmpeg"
         val hanBrakePath = "$workingDir/library/HandBrakeCLI"
+        val subList = sortedExcelDataList.subList(startSortIndex - 1, endSortIndex - 1)
+        val audioFileList = subList.map { File("$workingTempDir/compressed_audio/${it.ID}.mp3") }
+
+        Utils.emptyFileDir(workingTempDir)
 
         println("step: 开始压缩音频")
-
-        File(workingTempDir).apply {
-            for (listFile in listFiles()) {
-                if (listFile.isDirectory) {
-                    for (childListFile in listFile.listFiles()) {
-                        childListFile.delete()
-                    }
-                } else {
-                    listFile.delete()
-                }
-            }
-        }
-
-        runBlocking {
-            for (listFile in File(inputAudioDirPath).listFiles()) {
-                launch(Dispatchers.IO) {
-                    val outputFile =
-                        File("$workingTempDir/compressed_audio/${(listFile.name.split(".")[0].toInt())}.mp3").apply {
-                            if (!this.parentFile.exists())
-                                this.parentFile.mkdirs()
-                        }
-                    // ffmpeg -i left.aac -ac 2 output.m4a
-                    val cmd = "$cmdPath -y -i ${listFile.path} -ac 2 -ar 48000 ${outputFile.path}"
-                    println(cmd)
-                    Runtime.getRuntime().exec(cmd).apply {
-                        waitFor()
-                    }
-                }
-            }
-        }
-
+        compressAudio(cmdPath, subList)
         println("step: 结束压缩音频")
 
         println("step: 开始生成间隔音频文件")
-        val repeatGameTimeFile = File("$workingTempDir/gap_time/$repeatGapTime.mp3")
-        val sentenceGapTimeFile = File("$workingTempDir/gap_time/$sentenceGapTime.mp3")
-
-        for (file in arrayOf(repeatGameTimeFile, sentenceGapTimeFile)) {
-            if (!file.parentFile.exists())
-                file.parentFile.mkdirs()
-        }
-
-        Runtime.getRuntime()
-            .exec("$cmdPath -y -f lavfi -i anullsrc=r=48000 -t $repeatGapTime ${repeatGameTimeFile.path}")
-            .apply {
-                waitFor()
-            }
-
-        Runtime.getRuntime()
-            .exec("$cmdPath -y -f lavfi -i anullsrc=r=48000 -t $sentenceGapTime ${sentenceGapTimeFile.path}")
-            .apply {
-                waitFor()
-            }
-
+        generateGapTime(cmdPath)
         println("step: 结束生成间隔音频文件")
 
         println("step: 开始生成图片")
-
-        val subList = sortedExcelDataList.subList(startSortIndex - 1, endSortIndex - 1)
-
         subList.forEachIndexed { index, sortedExcelData ->
             outputImg(index, sortedExcelData)
         }
-
-        val audioFileList = subList
-            .map {
-                File("$workingTempDir/compressed_audio/${it.ID}.mp3")
-            }
         println("step: 结束生成图片")
 
         println("step: 开始合并视频")
-
         val inputVideoList = StringBuilder()
-//        val inputImgList = StringBuilder()
-//        val inputAudioList = StringBuilder()
 
-        for (list in Utils.averageAssignFixLength(audioFileList, 15)) {
-            runBlocking(Dispatchers.IO) {
-                list.forEachIndexed { index, audioFile ->
+        for (fileList in Utils.averageAssignFixLength(audioFileList, 5)) {
+            runBlocking {
+                fileList.forEachIndexed { index, audioFile ->
+
                     launch(Dispatchers.IO) {
                         if (!audioFile.exists()) {
-                            println(audioFile.path)
+                            println("file not exist: ${audioFile.path}")
                         }
                         val inputAudioList = StringBuilder()
                         val inputImgList = StringBuilder()
@@ -285,41 +216,28 @@ object FFmpegImgToVideoUtil {
                         val probeResult = ffprobe.probe(audioFile.path)
                         val fFmpegFormat = probeResult.format
                         val curAudioDuration = fFmpegFormat.duration
-                        var specialGapTimeFile: File? = null
-                        var specialAudioGapTime = 0.0
 
                         for (i in 0 until 2) {
                             inputAudioList.append("file '${audioFile.path}'")
                             inputAudioList.append("\n")
-                            if (specialGapTimeFile != null) {
-                                inputAudioList.append("file '${specialGapTimeFile.path}'")
-                                inputAudioList.append("\n")
-                            }
                             inputAudioList.append("file '${repeatGameTimeFile.path}'")
                             inputAudioList.append("\n")
                         }
                         inputAudioList.append("file '${audioFile.path}'")
                         inputAudioList.append("\n")
-                        if (specialGapTimeFile != null) {
-                            inputAudioList.append("file '${specialGapTimeFile.path}'")
-                            inputAudioList.append("\n")
-                        }
                         inputAudioList.append("file '${sentenceGapTimeFile.path}'")
                         inputAudioList.append("\n")
 
                         val fistPicFileName = "${audioFileName}-pic1.png"
                         val secondPicFileName = "${audioFileName}-pic2.png"
 
-
-                        val correctedAudioDuration = curAudioDuration + specialAudioGapTime
-
                         inputImgList.append("file '$workingDir/background_img/bg_listen.png'")
                         inputImgList.append("\n")
-                        inputImgList.append("duration ${correctedAudioDuration + repeatGapTime}")
+                        inputImgList.append("duration ${curAudioDuration + repeatGapTime}")
                         inputImgList.append("\n")
                         inputImgList.append("file '$inputAudioImgDirPath/${fistPicFileName}'")
                         inputImgList.append("\n")
-                        inputImgList.append("duration ${correctedAudioDuration + repeatGapTime}")
+                        inputImgList.append("duration ${curAudioDuration + repeatGapTime}")
                         inputImgList.append("\n")
                         if (isEnglish) {
                             inputImgList.append("file '$inputAudioImgDirPath/${fistPicFileName}'")
@@ -327,7 +245,7 @@ object FFmpegImgToVideoUtil {
                             inputImgList.append("file '$inputAudioImgDirPath/${secondPicFileName}'")
                         }
                         inputImgList.append("\n")
-                        inputImgList.append("duration ${correctedAudioDuration + sentenceGapTime + 3}")
+                        inputImgList.append("duration ${curAudioDuration + sentenceGapTime + 3}")
                         inputImgList.append("\n")
 
                         if (isEnglish) {
@@ -352,14 +270,19 @@ object FFmpegImgToVideoUtil {
                                 this.parentFile.mkdirs()
                         }
 
-                        var cmd =
-                            "$cmdPath -y -f concat -safe 0 -i ${inputAudioListFile.path} -c copy ${outputAudioFile.path}"
+                        ShellUtils.run(
+                            "$cmdPath -y -f concat -safe 0 -i ${inputAudioListFile.path} -c copy ${outputAudioFile.path}",
+                            object : ShellUtils.OnCommandExecOutputListener {
+                                override fun onSuccess(line: String?) {
+                                    println(line)
+                                }
 
-                        Runtime.getRuntime().exec(
-                            cmd
-                        ).apply {
-                            waitFor()
-                        }
+                                override fun onError(line: String?) {
+                                    println(line)
+                                }
+
+                            }
+                        )
 
                         val inputImgListFile =
                             File("$workingTempDir/input_txt/inputImgList-${audioFileName}.txt").apply {
@@ -375,30 +298,35 @@ object FFmpegImgToVideoUtil {
                                 this.parentFile.mkdirs()
                         }
 
-                        cmd = "$cmdPath -y -f " +
-                                "concat -safe 0 " +
-                                "-i ${inputImgListFile.path} " +
-//                                "-i ${outputAudioFile.path} " +
-                                "-r 10 " +
-                                "-vcodec libx264 " +
-                                "-pix_fmt yuv420p " +
-                                outputVideoFile.path
-                        println(cmd)
-                        Runtime.getRuntime().exec(cmd).apply {
-                            waitFor()
-                        }
+                        ShellUtils.run(
+                            "$cmdPath -y -f concat -safe 0 -i ${inputImgListFile.path} -r 10 -vcodec libx264 -pix_fmt yuv420p -preset ultrafast ${outputVideoFile.path}",
+                            object : ShellUtils.OnCommandExecOutputListener {
+                                override fun onSuccess(line: String?) {
+                                    println(line)
+                                }
 
-                        val keyOutputVideoFile = File("$workingDir/temp/output/key-output-${audioFileName}.mp4").apply {
+                                override fun onError(line: String?) {
+                                    println(line)
+                                }
+                            })
+
+                        val outputAudioFileDuration = ffprobe.probe(outputAudioFile.path).format.duration
+                        val keyOutputVideoFile = File("$workingTempDir/output/key-output-${audioFileName}.mp4").apply {
                             if (!this.parentFile.exists())
                                 this.parentFile.mkdirs()
                         }
+                        ShellUtils.run(
+                            "$cmdPath -y -ss 0 -t $outputAudioFileDuration -accurate_seek -i ${outputVideoFile.path} -codec copy -avoid_negative_ts 1 ${keyOutputVideoFile.path}",
+                            object : ShellUtils.OnCommandExecOutputListener {
+                                override fun onSuccess(line: String?) {
+                                    println(line)
+                                }
 
-                        cmd =
-                            "$cmdPath -y -ss 0 -t ${ffprobe.probe(outputAudioFile.path).format.duration.toInt()} -accurate_seek -i ${outputVideoFile.path} -codec copy -avoid_negative_ts 1 ${keyOutputVideoFile.path}"
-                        println(cmd)
-                        Runtime.getRuntime().exec(cmd).apply {
-                            waitFor()
-                        }
+                                override fun onError(line: String?) {
+                                    println(line)
+                                }
+
+                            })
 
                         val outputVideoFormattedFile =
                             File("$workingTempDir/output/formatted-output-${audioFileName}.mp4").apply {
@@ -406,53 +334,73 @@ object FFmpegImgToVideoUtil {
                                     this.parentFile.mkdirs()
                             }
 
-                        cmd =
-                            "$cmdPath -y -i ${keyOutputVideoFile.path} -i ${outputAudioFile.path} ${outputVideoFormattedFile.path}"
-                        println(cmd)
-                        Runtime.getRuntime().exec(cmd).apply {
-                            waitFor()
-                        }
+                        ShellUtils.run(
+                            "$cmdPath -y -i ${keyOutputVideoFile.path} -i ${outputAudioFile.path} ${outputVideoFormattedFile.path}",
+                            object : ShellUtils.OnCommandExecOutputListener {
+                                override fun onSuccess(line: String?) {
+                                    println(line)
+                                }
 
+                                override fun onError(line: String?) {
+                                    println(line)
+                                }
+                            }
+                        )
 
-//                        cmd =
-//                            "$cmdPath -y -i ${outputVideoFile.path} ${outputVideoFormattedFile.path}"
-//                        println(cmd)
-//                        Runtime.getRuntime().exec(cmd).apply {
-//                            waitFor()
-//                        }
+                        val handBrakeOutputVideoFile =
+                            File("$workingTempDir/output/handbrake-output-${audioFileName}.mp4").apply {
+                                if (!this.parentFile.exists())
+                                    this.parentFile.mkdirs()
+                            }
 
-//                        val handBrakeOutputVideoFile =
-//                            File("$workingDir/temp/output/hanbreakeoutput-${audioFileName}.mp4").apply {
-//                                if (!this.parentFile.exists())
-//                                    this.parentFile.mkdirs()
-//                            }
-//                        cmd =
-//                            "$hanBrakePath -i ${outputVideoFile.path} -o ${handBrakeOutputVideoFile.path} -e x264 -q 30 -B 160"
-//                        println(cmd)
-//                        Runtime.getRuntime().exec(cmd).apply {
-//                            waitFor()
-//                        }
+                        ShellUtils.run(
+                            "$hanBrakePath -i ${outputVideoFormattedFile.path} -o ${handBrakeOutputVideoFile.path} -e x264 -q 10 -B 160",
+                            object : ShellUtils.OnCommandExecOutputListener {
+                                override fun onSuccess(line: String?) {
+                                    println(line)
+                                }
+
+                                override fun onError(line: String?) {
+                                    println(line)
+                                }
+                            }
+                        )
+
+//            val mtsFile =
+//                File("$workingTempDir/output/handbrake-output-${audioFileName}.ts").apply {
+//                    if (!this.parentFile.exists())
+//                        this.parentFile.mkdirs()
+//                }
+//
+//            ShellUtils.run(
+//                "$cmdPath -y -i ${handBrakeOutputVideoFile.path} -vcodec copy -acodec copy ${mtsFile.path}",
+//                object : ShellUtils.OnCommandExecOutputListener {
+//                    override fun onSuccess(line: String?) {
+//                        println(line)
+//                    }
+//
+//                    override fun onError(line: String?) {
+//                        println(line)
+//                    }
+//                }
+//            )
                     }
                 }
             }
         }
 
-
-//        inputVideoList.append("file '$workingDir/output/enpal-片头.mp4'")
-//        inputVideoList.append("\n")
+        inputVideoList.append("file '$workingDir/output/enpal-片头.mp4'")
+        inputVideoList.append("\n")
 
         for (audioFile in audioFileList) {
             val audioFileName = audioFile.name.split(".")[0]
-            val outputVideoFile = File("$workingDir/temp/output/formatted-output-${audioFileName}.mp4")
-//            val outputAudioFile = File("$workingDir/temp/output/output-${audioFileName}.mp3")
-
+            val outputVideoFile = File("$workingTempDir/output/handbrake-output-${audioFileName}.mp4")
             inputVideoList.append("file '${outputVideoFile.path}'")
             inputVideoList.append("\n")
         }
 
-//        inputVideoList.append("file '$workingDir/output/enpal-片尾.mp4'")
-//        inputVideoList.append("\n")
-
+        inputVideoList.append("file '$workingDir/output/enpal-片尾.mp4'")
+        inputVideoList.append("\n")
 
         val inputVideoListFile = File("$workingTempDir/inputVideoList.txt").apply {
             if (!this.parentFile.exists())
@@ -462,85 +410,103 @@ object FFmpegImgToVideoUtil {
             )
         }
 
-        val outputVideoFile = File("$workingDir/output/output.mp4").apply {
+        val outputVideoFile = File("$workingDir/output/output-$outputFileName").apply {
             if (!this.parentFile.exists())
                 this.parentFile.mkdirs()
         }
 
-        var cmd = "$cmdPath -y -f concat -safe 0 -i ${inputVideoListFile.path} -c copy ${outputVideoFile.path}"
+        ShellUtils.run(
+            "$cmdPath -y -f concat -safe 0 -i ${inputVideoListFile.path} -c copy ${outputVideoFile.path}",
+            object : ShellUtils.OnCommandExecOutputListener {
+                override fun onSuccess(line: String?) {
+                    println(line)
+                }
 
-        println(cmd)
-
-        Runtime.getRuntime().exec(cmd).apply {
-            println(InputStreamReader(this.inputStream).readText())
-            println(InputStreamReader(this.errorStream).readText())
-            waitFor()
-        }
-
-        val outputVideoHandBrakeFile = File("$workingDir/output/output-handbrake.mp4").apply {
-            if (!this.parentFile.exists())
-                this.parentFile.mkdirs()
-        }
-
-        cmd = "$hanBrakePath -i ${outputVideoFile.path} -o ${outputVideoHandBrakeFile.path} -e x264 -q 30 -B 160"
-
-        Runtime.getRuntime().exec(cmd).apply {
-            println(InputStreamReader(this.inputStream).readText())
-            println(InputStreamReader(this.errorStream).readText())
-            waitFor()
-        }
+                override fun onError(line: String?) {
+                    println(line)
+                }
+            })
 
         val outputVideoFormattedFile = File("$workingDir/output/${outputFileName}").apply {
             if (!this.parentFile.exists())
                 this.parentFile.mkdirs()
         }
 
-        cmd = "$cmdPath -y -i ${outputVideoHandBrakeFile.path} ${outputVideoFormattedFile.path}"
-        println(cmd)
-        Runtime.getRuntime().exec(
-            cmd
-        ).apply {
-            println(InputStreamReader(this.inputStream).readText())
-            println(InputStreamReader(this.errorStream).readText())
-            waitFor()
-        }
+        ShellUtils.run(
+            "$cmdPath -y -i ${outputVideoFile.path} -preset ultrafast ${outputVideoFormattedFile.path}",
+            object : ShellUtils.OnCommandExecOutputListener {
+                override fun onSuccess(line: String?) {
+                    println(line)
+                }
 
-//        val inputVideoFinalList = StringBuilder()
-//        inputVideoFinalList.append("file '${workingDir}/output/enpal-片头.mp4'")
-//        inputVideoFinalList.append("\n")
-//        inputVideoFinalList.append("file '${outputVideoFormattedFile.path}'")
-//        inputVideoFinalList.append("\n")
-//        inputVideoFinalList.append("file '${workingDir}/output/enpal-片尾.mp4'")
-//        inputVideoFinalList.append("\n")
-//
-//
-//        val inputVideoFinalListFile = File("$workingTempDir/inputVideoFinalList.txt").apply {
-//            if (!this.parentFile.exists())
-//                this.parentFile.mkdirs()
-//            writeText(
-//                inputVideoFinalList.toString().substring(0, inputVideoFinalList.toString().length - 1)
-//            )
-//        }
-//
-//        val outputVideoFinalFile = File("$workingDir/output/output-final.mp4").apply {
-//            if (!this.parentFile.exists())
-//                this.parentFile.mkdirs()
-//        }
-//
-//        cmd = "$cmdPath -y -f concat -safe 0 -i ${inputVideoFinalListFile.path} -c copy ${outputVideoFinalFile.path}"
-//
-//        println(cmd)
-//
-//        Runtime.getRuntime().exec(cmd).apply {
-//            println(InputStreamReader(this.inputStream).readText())
-//            println(InputStreamReader(this.errorStream).readText())
-//            waitFor()
-//        }
+                override fun onError(line: String?) {
+                    println(line)
+                }
 
-//        outputVideoFile.delete()
+            })
+
         println("step: 结束合并视频")
         println("输出文件路径：${outputVideoFormattedFile.path} 耗时：${(System.currentTimeMillis() - startTime) / 1000L} s")
     }
+
+    private fun compressAudio(cmdPath: String, subList: MutableList<SortedExcelData>) {
+        runBlocking {
+            for (listFile in File(inputAudioDirPath).listFiles().filter { file ->
+                subList.find {
+                    it.ID == file.name.split(".")[0].toInt().toString()
+                } != null
+            }) {
+                launch(Dispatchers.IO) {
+                    val outputFile =
+                        File("$workingTempDir/compressed_audio/${(listFile.name.split(".")[0].toInt())}.mp3").apply {
+                            if (!this.parentFile.exists())
+                                this.parentFile.mkdirs()
+                        }
+                    ShellUtils.run(
+                        "$cmdPath -y -i ${listFile.path} -ac 2 -ar 48000 ${outputFile.path}",
+                        object : ShellUtils.OnCommandExecOutputListener {
+                            override fun onSuccess(line: String?) {
+                            }
+
+                            override fun onError(line: String?) {
+                            }
+                        })
+                }
+            }
+        }
+    }
+
+    private fun generateGapTime(cmdPath: String) {
+
+        for (file in arrayOf(repeatGameTimeFile, sentenceGapTimeFile)) {
+            if (!file.parentFile.exists())
+                file.parentFile.mkdirs()
+        }
+
+        ShellUtils.run(
+            "$cmdPath -y -f lavfi -i anullsrc=r=48000 -t $repeatGapTime ${repeatGameTimeFile.path}",
+            object : ShellUtils.OnCommandExecOutputListener {
+                override fun onSuccess(line: String?) {
+                }
+
+                override fun onError(line: String?) {
+                }
+
+            })
+
+        ShellUtils.run(
+            "$cmdPath -y -f lavfi -i anullsrc=r=48000 -t $sentenceGapTime ${sentenceGapTimeFile.path}",
+            object : ShellUtils.OnCommandExecOutputListener {
+                override fun onSuccess(line: String?) {
+                }
+
+                override fun onError(line: String?) {
+                }
+
+            })
+    }
+
+    private fun isDarkBg() = arrayOf(5, 7).contains(bgIndex)
 
     private fun outputImg(index: Int, sortedExcelData: SortedExcelData) {
 //        bgIndex = index % 7 + 1
@@ -550,7 +516,7 @@ object FFmpegImgToVideoUtil {
         val indexFont = Font("Arial Rounded MT Bold", Font.PLAIN, 41)
 
         IJ.openImage(bgImg).processor.apply {
-            if (bgIndex > 4) {
+            if (isDarkBg()) {
                 setColor(Color.WHITE)
             } else {
                 setColor(Color.BLACK)
@@ -560,7 +526,7 @@ object FFmpegImgToVideoUtil {
 
             drawSentence(font, sortedExcelData.SENTENCE)
 
-            if (bgIndex > 4) {
+            if (isDarkBg()) {
                 setColor(Color.WHITE)
             } else {
                 setColor(Color.decode("#2F6DAD"))
@@ -583,7 +549,7 @@ object FFmpegImgToVideoUtil {
         }
 
         IJ.openImage(bgImg).processor.apply {
-            if (bgIndex > 4) {
+            if (isDarkBg()) {
                 setColor(Color.WHITE)
             } else {
                 setColor(Color.BLACK)
@@ -593,7 +559,7 @@ object FFmpegImgToVideoUtil {
 
             drawSentence(font, sortedExcelData.SENTENCE)
 
-            if (bgIndex > 4) {
+            if (isDarkBg()) {
                 setColor(Color.WHITE)
             } else {
                 setColor(Color.decode("#2F6DAD"))
@@ -648,7 +614,7 @@ object FFmpegImgToVideoUtil {
 
     private fun ImageProcessor.drawTranslate(bgIndex: Int, translate: String) {
         var translateFont = Font("Hiragino Maru Gothic Pro", Font.PLAIN, 50)
-        if (bgIndex > 4) {
+        if (isDarkBg()) {
             setColor(Color.decode("#FCF071"))
         } else {
             setColor(Color.decode("#4DA0F8"))
@@ -678,11 +644,11 @@ object FFmpegImgToVideoUtil {
 
     private fun ImageProcessor.drawSentence(font: Font, sentence: String) {
         val contentRect = getContentRect(font, sentence)
-        println("contentRect.width:${contentRect.width}")
-        println("contentRect.height:${contentRect.height}")
-
-        println("img.height:${width}")
-        println("img.height:${height}")
+//        println("contentRect.width:${contentRect.width}")
+//        println("contentRect.height:${contentRect.height}")
+//
+//        println("img.height:${width}")
+//        println("img.height:${height}")
 
         val outlineRect = Rectangle(254 + 30, 200 + 30, 1280 - 60, 670 - 60)
 
@@ -727,15 +693,15 @@ object FFmpegImgToVideoUtil {
             val startX = outlineRect.x + outlineRect.width / 2 - (contentRect.width / 2)
             val startY = outlineRect.y + outlineRect.height / 2 - (contentRect.height / 2) + 80
 
-            println("sentence:$sentence")
-            println("startX:$startX")
-            println("startY:$startY")
+//            println("sentence:$sentence")
+//            println("startX:$startX")
+//            println("startY:$startY")
             drawString(sentence, startX, startY)
         }
 
     }
 
-    fun getContentRect(font: Font, content: String): Rectangle {
+    private fun getContentRect(font: Font, content: String): Rectangle {
         val frc = FontRenderContext(AffineTransform(), true, true)
         return font.getStringBounds(content, frc).bounds
     }
@@ -782,7 +748,7 @@ object FFmpegImgToVideoUtil {
 
         //设置好水印位置x,y
 
-        if (bgIndex > 4) {
+        if (isDarkBg()) {
             //描边色
             g2.color = Color.black
             g2.draw(sha)
@@ -806,7 +772,7 @@ object FFmpegImgToVideoUtil {
         tl = TextLayout((index + 1).toString(), indexFont, frc)
         sha = drawIndex(tl, indexFont, index + 1)
 
-        if (bgIndex > 4) {
+        if (isDarkBg()) {
             //描边色
             g2.color = Color.white
             g2.draw(sha)
@@ -844,7 +810,7 @@ object FFmpegImgToVideoUtil {
                 sha = drawTranslate(tl, this.first, transText).second
             }
 
-            if (bgIndex > 4) {
+            if (isDarkBg()) {
                 //描边色
                 g2.color = Color.decode("#FCF071")
                 g2.draw(sha)
@@ -941,7 +907,10 @@ object FFmpegImgToVideoUtil {
             val startX = outlineRect.x + outlineRect.width / 2 - (sentenceWidth / 2)
             val startY = outlineRect.y + outlineRect.height / 2 - (sentenceHeight / 2) + 55
 
-            return Pair(realWriteSentence, textLayout.getOutline(AffineTransform.getTranslateInstance(startX.toDouble(), startY.toDouble())))
+            return Pair(
+                realWriteSentence,
+                textLayout.getOutline(AffineTransform.getTranslateInstance(startX.toDouble(), startY.toDouble()))
+            )
         } else {
             val startX = outlineRect.x + outlineRect.width / 2 - (contentRect.width / 2)
             val startY = outlineRect.y + outlineRect.height / 2 - (contentRect.height / 2) + 55
@@ -949,8 +918,75 @@ object FFmpegImgToVideoUtil {
             println("ff sentence:$sentence")
             println("startX:$startX")
             println("startY:$startY")
-            return Pair(sentence, textLayout.getOutline(AffineTransform.getTranslateInstance(startX.toDouble(), startY.toDouble())))
+            return Pair(
+                sentence,
+                textLayout.getOutline(AffineTransform.getTranslateInstance(startX.toDouble(), startY.toDouble()))
+            )
         }
 
+    }
+
+    fun writeStartAndEnd() {
+        val cmdPath = "$workingDir/library/ffmpeg"
+        val hanBrakePath = "$workingDir/library/HandBrakeCLI"
+        var cmd = ""
+        loop@ for (listFile in File("$workingDir/output/1-1077视频-已固定帧率").listFiles()) {
+            if (!listFile.name.endsWith(".mp4")) {
+                continue@loop
+            }
+            val outPutFile = File("$workingDir/output/1-1077视频-fixed/${listFile.name}").apply {
+                if (!this.parentFile.exists())
+                    this.parentFile.mkdirs()
+            }
+            cmd = "$hanBrakePath -i ${listFile.path} -o ${outPutFile.path} -e x264 -q 30 -B 160"
+            Runtime.getRuntime().exec(cmd).apply {
+                for (readLine in InputStreamReader(this.inputStream).readLines()) {
+                    println(readLine)
+                }
+                waitFor()
+            }
+
+            val inputVideoFinalList = StringBuilder()
+            inputVideoFinalList.append("file '${workingDir}/output/enpal-片头.mp4'")
+            inputVideoFinalList.append("\n")
+            inputVideoFinalList.append("file '${outPutFile.path}'")
+            inputVideoFinalList.append("\n")
+            inputVideoFinalList.append("file '${workingDir}/output/enpal-片尾.mp4'")
+            inputVideoFinalList.append("\n")
+
+
+            val inputVideoFinalListFile = File("$workingTempDir/inputVideoFinalList.txt").apply {
+                if (!this.parentFile.exists())
+                    this.parentFile.mkdirs()
+                writeText(
+                    inputVideoFinalList.toString().substring(0, inputVideoFinalList.toString().length - 1)
+                )
+            }
+
+            val outputVideoWithStartEndFile =
+                File("$workingDir/output/1-1077视频-with-start-end/${listFile.name}").apply {
+                    if (!this.parentFile.exists())
+                        this.parentFile.mkdirs()
+                }
+
+            cmd =
+                "$cmdPath -y -f concat -safe 0 -i ${inputVideoFinalListFile.path} -c copy ${outputVideoWithStartEndFile.path}"
+
+            println(cmd)
+
+            Runtime.getRuntime().exec(cmd).apply {
+                for (readLine in InputStreamReader(this.inputStream).readLines()) {
+                    println(readLine)
+                }
+                waitFor()
+            }
+        }
+
+        Runtime.getRuntime().exec("/Users/lingodeer-yxg/Desktop/FFmpegUtil/final.sh").apply {
+            for (readLine in InputStreamReader(this.inputStream).readLines()) {
+                println(readLine)
+            }
+            waitFor()
+        }
     }
 }

@@ -1,3 +1,5 @@
+import java.io.File
+
 object Utils {
     fun <T> averageAssignFixLength(source: List<T>?, splitItemNum: Int): List<List<T>> {
         val result = ArrayList<List<T>>()
@@ -26,5 +28,32 @@ object Utils {
         }
 
         return result
+    }
+
+    fun emptyFileDir(filePath: String): Boolean {
+        val file = File(filePath)
+        if (!file.exists()) {
+            return false
+        } else {
+            if (file.isFile) {
+                return false
+            }
+            if (file.isDirectory) {
+                val childFile = file.listFiles()
+                if (childFile == null || childFile.isEmpty()) {
+                    return false
+                }
+                for (f in childFile) {
+                    if (f.isFile) {
+                        f.delete()
+                    } else if (f.isDirectory) {
+                        emptyFileDir(f.absolutePath)
+                    }
+                }
+                return true
+            } else {
+                return false
+            }
+        }
     }
 }
