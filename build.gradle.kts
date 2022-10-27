@@ -13,6 +13,9 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation("aws.sdk.kotlin:s3:0.16.0")
+    implementation("aws.sdk.kotlin:polly:0.16.0")
+    implementation("aws.sdk.kotlin:translate:0.16.0")
     implementation("net.imagej:ij:1.51h")
     implementation("net.bramp.ffmpeg:ffmpeg:0.7.0")
     implementation ("com.alibaba:easyexcel:3.1.1")

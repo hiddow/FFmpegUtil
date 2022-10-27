@@ -1,12 +1,9 @@
 @file:Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 
-import aws.sdk.kotlin.services.polly.PollyClient
-import aws.sdk.kotlin.services.polly.model.*
-import aws.smithy.kotlin.runtime.content.toByteArray
 import com.alibaba.excel.EasyExcel
 import com.alibaba.excel.context.AnalysisContext
 import com.alibaba.excel.read.listener.ReadListener
-import data_object.SortedExcelData
+import data_object.SortedExcelData2
 import ij.IJ
 import ij.process.ImageProcessor
 import kotlinx.coroutines.Dispatchers
@@ -28,40 +25,31 @@ import kotlin.system.exitProcess
 fun main(args: Array<String>) {
 
 
-    for (i in 0 until 1) {
-//        val count = if (i == 6) {
-//            177
-//        } else {
-//            150
+    runBlocking {
+        val ffmpegimgtovideoutilEN = FFmpegImgToVideoA1()
+        val ffmpegimgtovideoutilJP = FFmpegImgToVideoA1()
+//        for (fFmpegImgToVideoUtil3 in arrayOf(ffmpegimgtovideoutilEN, ffmpegimgtovideoutilJP)) {
+//            fFmpegImgToVideoUtil3.startSortIndex = 1
+//            fFmpegImgToVideoUtil3.endSortIndex = 760
 //        }
-        val count = 1077
-        runBlocking {
-            val ffmpegimgtovideoutilEN = FFmpegImgToVideoUtil3()
-            val ffmpegimgtovideoutilJP = FFmpegImgToVideoUtil3()
-            for (fFmpegImgToVideoUtil3 in arrayOf(ffmpegimgtovideoutilEN, ffmpegimgtovideoutilJP)) {
-                fFmpegImgToVideoUtil3.bgIndex = i + 1
-                fFmpegImgToVideoUtil3.startSortIndex = (i * 150) + 1
-                fFmpegImgToVideoUtil3.endSortIndex = fFmpegImgToVideoUtil3.startSortIndex + count
-            }
 
-//            launch(Dispatchers.IO) {
-//                ffmpegimgtovideoutilEN.isEnglish = true
-//                ffmpegimgtovideoutilEN.outputFileName =
-//                    "output(${ffmpegimgtovideoutilEN.startSortIndex}-${ffmpegimgtovideoutilEN.endSortIndex - 1})-EN.mp4"
-//                ffmpegimgtovideoutilEN.main()
-//            }
-            launch(Dispatchers.IO) {
-                ffmpegimgtovideoutilJP.isEnglish = false
-                ffmpegimgtovideoutilJP.outputFileName =
-                    "output(${ffmpegimgtovideoutilJP.startSortIndex}-${ffmpegimgtovideoutilJP.endSortIndex - 1})-EN-JP.mp4"
-                ffmpegimgtovideoutilJP.main()
-            }
+        launch(Dispatchers.IO) {
+            ffmpegimgtovideoutilEN.isEnglish = true
+            ffmpegimgtovideoutilEN.outputFileName =
+                "A1-output-EN.mp4"
+            ffmpegimgtovideoutilEN.main()
+        }
+        launch(Dispatchers.IO) {
+            ffmpegimgtovideoutilJP.isEnglish = false
+            ffmpegimgtovideoutilJP.outputFileName =
+                "A1-output-JP.mp4"
+            ffmpegimgtovideoutilJP.main()
         }
     }
 
 }
 
-class FFmpegImgToVideoUtil3 {
+class FFmpegImgToVideoA1 {
     var bgIndex = 1
     private var isDebug = false
     var hasCompressedAudio = false
@@ -77,8 +65,8 @@ class FFmpegImgToVideoUtil3 {
     var endSortIndex = 151
 
     var outputFileName = "output(1-150)"
-    private var inputAudioDirPath = "/Users/lingodeer-yxg/Downloads/YT-Ref-compressed"
-    private var inputAudioSortExcelPath = "/Users/lingodeer-yxg/Desktop/FFmpegUtil/1077-with-Japanese(排序后).xlsx"
+    private var inputAudioDirPath = "/Users/lingodeer-yxg/Downloads/A1系列视频素材(1)/A1VOCAB音频汇总"
+    private var inputAudioSortExcelPath = "/Users/lingodeer-yxg/Downloads/A1系列视频素材(1)/A1VOCAB英日句子.xlsx"
 
     private val repeatGameTimeFile get() = File("$workingTempDir/gap_time/$repeatGapTime.mp3")
     private val sentenceGapTimeFile get() = File("$workingTempDir/gap_time/$sentenceGapTime.mp3")
@@ -155,10 +143,10 @@ class FFmpegImgToVideoUtil3 {
         if (inputAudioSortExcelPath.isNotEmpty()) {
             EasyExcel.read(
                 File(inputAudioSortExcelPath),
-                SortedExcelData::class.java,
-                object : ReadListener<SortedExcelData> {
-                    val sortedExcelDataList = ArrayList<SortedExcelData>()
-                    override fun invoke(data: SortedExcelData, context: AnalysisContext) {
+                SortedExcelData2::class.java,
+                object : ReadListener<SortedExcelData2> {
+                    val sortedExcelDataList = ArrayList<SortedExcelData2>()
+                    override fun invoke(data: SortedExcelData2, context: AnalysisContext) {
                         sortedExcelDataList.add(data)
                     }
 
@@ -166,7 +154,7 @@ class FFmpegImgToVideoUtil3 {
                         combineVideoWithSortedList(sortedExcelDataList)
                     }
 
-                }).sheet("1077 WITH Japanese").doRead()
+                }).sheet("Sheet1").doRead()
         } else {
             combineVideoWithSortedList(ArrayList())
         }
@@ -175,7 +163,7 @@ class FFmpegImgToVideoUtil3 {
     /**
      * 合成视频
      */
-    fun combineVideoWithSortedList(sortedExcelDataList: ArrayList<SortedExcelData>) {
+    fun combineVideoWithSortedList(sortedExcelDataList: ArrayList<SortedExcelData2>) {
         val startTime = System.currentTimeMillis()
         val inputAudioImgDirPath = "$workingTempDir/output_img"
 
@@ -183,12 +171,8 @@ class FFmpegImgToVideoUtil3 {
 
         val cmdPath = "$workingDir/library/ffmpeg"
         val hanBrakePath = "$workingDir/library/HandBrakeCLI"
-        val subList = sortedExcelDataList.subList(startSortIndex - 1, endSortIndex - 1)
+        val subList = sortedExcelDataList.subList(0, sortedExcelDataList.size)
         val audioFileList = subList.map { File("$workingTempDir/compressed_audio/${it.ID}.mp3") }
-
-        if (!isEnglish) {
-            genLocalAudioFromAWS(subList)
-        }
 
         Utils.emptyFileDir(workingTempDir)
 
@@ -213,8 +197,6 @@ class FFmpegImgToVideoUtil3 {
             runBlocking {
                 fileList.forEachIndexed { index, audioFile ->
 
-
-
                     launch(Dispatchers.IO) {
                         if (!audioFile.exists()) {
                             println("file not exist: ${audioFile.path}")
@@ -227,76 +209,44 @@ class FFmpegImgToVideoUtil3 {
                         val fFmpegFormat = probeResult.format
                         val curAudioDuration = fFmpegFormat.duration
 
-                        if (isEnglish) {
-                            for (i in 0 until 2) {
-                                inputAudioList.append("file '${audioFile.path}'")
-                                inputAudioList.append("\n")
-                                inputAudioList.append("file '${repeatGameTimeFile.path}'")
-                                inputAudioList.append("\n")
-                            }
-                            inputAudioList.append("file '${audioFile.path}'")
-                            inputAudioList.append("\n")
-                            inputAudioList.append("file '${sentenceGapTimeFile.path}'")
-                            inputAudioList.append("\n")
-
-
-                            val fistPicFileName = "${audioFileName}-pic1.png"
-                            val secondPicFileName = "${audioFileName}-pic2.png"
-
-                            inputImgList.append("file '$workingDir/background_img/bg_listen.png'")
-                            inputImgList.append("\n")
-                            inputImgList.append("duration ${curAudioDuration + repeatGapTime}")
-                            inputImgList.append("\n")
-                            inputImgList.append("file '$inputAudioImgDirPath/${fistPicFileName}'")
-                            inputImgList.append("\n")
-                            inputImgList.append("duration ${curAudioDuration + repeatGapTime}")
-                            inputImgList.append("\n")
-                            if (isEnglish) {
-                                inputImgList.append("file '$inputAudioImgDirPath/${fistPicFileName}'")
-                            } else {
-                                inputImgList.append("file '$inputAudioImgDirPath/${secondPicFileName}'")
-                            }
-                            inputImgList.append("\n")
-                            inputImgList.append("duration ${curAudioDuration + sentenceGapTime + 3}")
-                            inputImgList.append("\n")
-
-                            if (isEnglish) {
-                                inputImgList.append("file '$inputAudioImgDirPath/${fistPicFileName}'")
-                            } else {
-                                inputImgList.append("file '$inputAudioImgDirPath/${secondPicFileName}'")
-                            }
-                            inputImgList.append("\n")
-
-                        } else {
-                            val localAudioFile = File(audioFile.path.replace(".mp3", "-jp.mp3"))
-                            val localProbeResult = ffprobe.probe(localAudioFile.path)
-                            val localFFmpegFormat = localProbeResult.format
-                            val localAudioDuration = localFFmpegFormat.duration
-
-
+                        for (i in 0 until 2) {
                             inputAudioList.append("file '${audioFile.path}'")
                             inputAudioList.append("\n")
                             inputAudioList.append("file '${repeatGameTimeFile.path}'")
                             inputAudioList.append("\n")
-
-                            inputAudioList.append("file '${localAudioFile.path}'")
-                            inputAudioList.append("\n")
-                            inputAudioList.append("file '${repeatGameTimeFile.path}'")
-                            inputAudioList.append("\n")
-
-                            inputAudioList.append("file '${audioFile.path}'")
-                            inputAudioList.append("\n")
-                            inputAudioList.append("file '${sentenceGapTimeFile.path}'")
-                            inputAudioList.append("\n")
-
-                            val secondPicFileName = "${audioFileName}-pic2.png"
-                            inputImgList.append("file '$inputAudioImgDirPath/${secondPicFileName}'")
-                            inputImgList.append("\n")
-                            inputImgList.append("duration ${curAudioDuration + repeatGapTime + localAudioDuration + repeatGapTime + curAudioDuration + sentenceGapTime + 3}")
-                            inputImgList.append("\n")
-                            inputImgList.append("file '$inputAudioImgDirPath/${secondPicFileName}'")
-                            inputImgList.append("\n")
                         }
+                        inputAudioList.append("file '${audioFile.path}'")
+                        inputAudioList.append("\n")
+                        inputAudioList.append("file '${sentenceGapTimeFile.path}'")
+                        inputAudioList.append("\n")
+
+                        val listenPicFileName = "${audioFileName}-pic0.png"
+                        val fistPicFileName = "${audioFileName}-pic1.png"
+                        val secondPicFileName = "${audioFileName}-pic2.png"
+
+                        inputImgList.append("file '$inputAudioImgDirPath/${listenPicFileName}'")
+                        inputImgList.append("\n")
+                        inputImgList.append("duration ${curAudioDuration + repeatGapTime}")
+                        inputImgList.append("\n")
+                        inputImgList.append("file '$inputAudioImgDirPath/${fistPicFileName}'")
+                        inputImgList.append("\n")
+                        inputImgList.append("duration ${curAudioDuration + repeatGapTime}")
+                        inputImgList.append("\n")
+                        if (isEnglish) {
+                            inputImgList.append("file '$inputAudioImgDirPath/${fistPicFileName}'")
+                        } else {
+                            inputImgList.append("file '$inputAudioImgDirPath/${secondPicFileName}'")
+                        }
+                        inputImgList.append("\n")
+                        inputImgList.append("duration ${curAudioDuration + sentenceGapTime + 3}")
+                        inputImgList.append("\n")
+
+                        if (isEnglish) {
+                            inputImgList.append("file '$inputAudioImgDirPath/${fistPicFileName}'")
+                        } else {
+                            inputImgList.append("file '$inputAudioImgDirPath/${secondPicFileName}'")
+                        }
+                        inputImgList.append("\n")
 
 
                         val inputAudioListFile =
@@ -433,9 +383,9 @@ class FFmpegImgToVideoUtil3 {
         }
 
         if (isEnglish) {
-            inputVideoList.append("file '$workingDir/片头片尾/fluenday/1077片头-英-formatted.mp4'")
+            inputVideoList.append("file /Users/lingodeer-yxg/Downloads/A1系列视频素材(1)/新FD片头-英.mp4'")
         } else {
-            inputVideoList.append("file '$workingDir/片头片尾/fluenday/1077片头-日-new-formatted.mp4'")
+            inputVideoList.append("file /Users/lingodeer-yxg/Downloads/A1系列视频素材(1)/新FD片头-日.mp4'")
         }
         inputVideoList.append("\n")
 
@@ -445,10 +395,11 @@ class FFmpegImgToVideoUtil3 {
             inputVideoList.append("file '${outputVideoFile.path}'")
             inputVideoList.append("\n")
         }
+
         if (isEnglish) {
-            inputVideoList.append("file '$workingDir/片头片尾/fluenday/新FD片尾-英.mp4'")
+            inputVideoList.append("file '/Users/lingodeer-yxg/Downloads/A1系列视频素材(1)/新FD片尾-英.mp4'")
         } else {
-            inputVideoList.append("file '$workingDir/片头片尾/fluenday/新FD片尾-日.mp4'")
+            inputVideoList.append("file '/Users/lingodeer-yxg/Downloads/A1系列视频素材(1)/新FD片尾-日.mp4'")
         }
         inputVideoList.append("\n")
 
@@ -499,28 +450,7 @@ class FFmpegImgToVideoUtil3 {
         println("输出文件路径：${outputVideoFormattedFile.path} 耗时：${(System.currentTimeMillis() - startTime) / 1000L} s")
     }
 
-    private fun genLocalAudioFromAWS(subList: MutableList<SortedExcelData>) {
-        for (sortedExcelDataList in Utils.averageAssignFixLength(subList, 10)) {
-            runBlocking {
-                for (sortedExcelData in sortedExcelDataList) {
-                    val localAudioFile =
-                        File("/Users/lingodeer-yxg/Desktop/FFmpegUtil/aws-audio/output(1-1077)-EN-JP.mp4/" + sortedExcelData.ID + "-jp.mp3")
-                    launch {
-                        getMp3AndJson(
-                            sortedExcelData.TRANS_JP,
-                            VoiceId.Takumi,
-                            Engine.Neural,
-                            LanguageCode.JaJp,
-                            localAudioFile
-                        )
-                    }
-                }
-            }
-        }
-
-    }
-
-    private fun compressAudio(cmdPath: String, subList: MutableList<SortedExcelData>) {
+    private fun compressAudio(cmdPath: String, subList: MutableList<SortedExcelData2>) {
         runBlocking {
             for (listFile in File(inputAudioDirPath).listFiles().filter { file ->
                 subList.find {
@@ -542,45 +472,6 @@ class FFmpegImgToVideoUtil3 {
                             override fun onError(line: String?) {
                             }
                         })
-                }
-
-                launch(Dispatchers.IO) {
-                    val slowAudioFile = File("/Users/lingodeer-yxg/Desktop/FFmpegUtil/aws-audio/output(1-1077)-EN-JP.mp4/${(listFile.name.split(".")[0].toInt())}-jp.mp3")
-                    val tempOutputFile =
-                        File("$workingTempDir/compressed_audio/${(slowAudioFile.name.split(".")[0])}-temp.mp3").apply {
-                            if (!this.parentFile.exists())
-                                this.parentFile.mkdirs()
-                        }
-
-                    ShellUtils.run(
-                        "$cmdPath -y -i ${slowAudioFile.path} -ac 2 -ar 48000 ${tempOutputFile.path}",
-                        object : ShellUtils.OnCommandExecOutputListener {
-                            override fun onSuccess(line: String?) {
-                            }
-
-                            override fun onError(line: String?) {
-                            }
-                        })
-
-                    val outputFile =
-                        File("$workingTempDir/compressed_audio/${(slowAudioFile.name.split(".")[0])}.mp3").apply {
-                            if (!this.parentFile.exists())
-                                this.parentFile.mkdirs()
-                        }
-
-                    ShellUtils.run(
-                        "$cmdPath -y -i ${tempOutputFile.path} -vcodec copy -af volume=2 ${outputFile.path}",
-                        object : ShellUtils.OnCommandExecOutputListener {
-                            override fun onSuccess(line: String?) {
-                                tempOutputFile.delete()
-                                println(line)
-                            }
-
-                            override fun onError(line: String?) {
-                                println(line)
-                            }
-                        })
-
                 }
             }
         }
@@ -618,12 +509,36 @@ class FFmpegImgToVideoUtil3 {
 
     private fun isDarkBg() = arrayOf(5, 7).contains(bgIndex)
 
-    private fun outputImg(index: Int, sortedExcelData: SortedExcelData) {
+    private fun outputImg(index: Int, sortedExcelData: SortedExcelData2) {
 //        bgIndex = index % 7 + 1
-        val bgImg = "$workingDir/background_img/bg_${bgIndex}.png"
+        val bgImg = "/Users/lingodeer-yxg/Downloads/A1系列视频素材(1)/A1背景图.png"
+        val listenImg = "/Users/lingodeer-yxg/Downloads/A1系列视频素材(1)/新listen图.png"
 
         val font = Font("Helvetica", Font.PLAIN, 92)
         val indexFont = Font("Arial Rounded MT Bold", Font.PLAIN, 41)
+
+        IJ.openImage(listenImg).processor.apply {
+            if (isDarkBg()) {
+                setColor(Color.WHITE)
+            } else {
+                setColor(Color.decode("#2F6DAD"))
+            }
+            setFont(indexFont)
+            setAntialiasedText(true)
+            drawIndex(indexFont, index + 1)
+
+            val outputImgFile =
+                File("$workingTempDir/output_img/${sortedExcelData.ID}-pic0.png").apply {
+                    if (!parentFile.exists())
+                        parentFile.mkdirs()
+                }
+
+            ImageIO.write(
+                this.bufferedImage,
+                "png",
+                outputImgFile
+            )
+        }
 
         IJ.openImage(bgImg).processor.apply {
             if (isDarkBg()) {
@@ -712,7 +627,7 @@ class FFmpegImgToVideoUtil3 {
 
 
     private fun ImageProcessor.drawIndex(font: Font, index: Int) {
-        val outlineRect = Rectangle(1410, 215, 86, 86)
+        val outlineRect = Rectangle(1605, 215, 86, 86)
 
         val contentRect = getContentRect(font, index.toString())
 
@@ -734,7 +649,7 @@ class FFmpegImgToVideoUtil3 {
         setAntialiasedText(true)
 
 
-        val outlineRect = Rectangle(254 + 30, 200 + 30, 1280 - 60, 670 - 60)
+        val outlineRect = Rectangle(185 + 30, 165 + 30, 1555 - 60, 715 - 60)
 
         var contentRect = getContentRect(translateFont, translate)
 
@@ -747,7 +662,7 @@ class FFmpegImgToVideoUtil3 {
         }
 
         val startX = outlineRect.x + outlineRect.width / 2 - contentRect.width / 2
-        val startY = outlineRect.y + outlineRect.height - 56 - (contentRect.height / 2) + contentRect.height
+        val startY = outlineRect.y + outlineRect.height - 100 - (contentRect.height / 2) + contentRect.height
 
         drawString(translate, startX, startY)
     }
@@ -760,7 +675,7 @@ class FFmpegImgToVideoUtil3 {
 //        println("img.height:${width}")
 //        println("img.height:${height}")
 
-        val outlineRect = Rectangle(254 + 30, 200 + 30, 1280 - 60, 670 - 60)
+        val outlineRect = Rectangle(185 + 30, 165 + 30, 1555 - 60, 715 - 60)
 
         if (contentRect.width > (outlineRect.width)) {
             val firstLineSentence = StringBuilder()
@@ -821,7 +736,7 @@ class FFmpegImgToVideoUtil3 {
         outputPath: String,
         index: Int,
         isDrawTranslate: Boolean,
-        sortedExcelData: SortedExcelData
+        sortedExcelData: SortedExcelData2
     ) {
         val font = Font("Helvetica", Font.PLAIN, 92)
         val indexFont = Font("Arial Rounded MT Bold", Font.PLAIN, 41)
@@ -1097,42 +1012,6 @@ class FFmpegImgToVideoUtil3 {
                 println(readLine)
             }
             waitFor()
-        }
-    }
-
-
-    private suspend fun getMp3AndJson(
-        fullArticle: String,
-        voiceId: VoiceId,
-        engine: Engine,
-        languageCode: LanguageCode,
-        file: File,
-    ) {
-        PollyClient { region = "us-west-2" }.use { polly ->
-            if (!file.exists()) {
-                polly.synthesizeSpeech(SynthesizeSpeechRequest {
-                    this.text = fullArticle
-                    this.voiceId = voiceId
-                    this.engine = engine
-                    this.languageCode = languageCode
-                    this.outputFormat = OutputFormat.Mp3
-                }) { resp ->
-                    val audioData = resp.audioStream?.toByteArray()
-                    file.apply {
-
-                        if (!this.parentFile.exists())
-                            this.parentFile.mkdirs();
-                        if (!this.exists())
-                            this.createNewFile();
-
-                        writeBytes(audioData!!)
-                    }
-                    println("OutPut MP3 Success")
-                }
-            } else {
-                println(file.path)
-            }
-
         }
     }
 }

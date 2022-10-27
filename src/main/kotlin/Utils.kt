@@ -56,4 +56,9 @@ object Utils {
             }
         }
     }
+
+    fun isPunch(str: String): Boolean {
+        return "[\\p{P}+~$`^=|<>～｀＄＾＋＝｜＜＞￥×]".toRegex().matches(str) || arrayOf("...").contains(str)
+    }
+
 }
