@@ -71,7 +71,7 @@ class FFmpegEbookToVideoUtil {
         println("protocol = $protocol")
         workingDir =
             if (isDebug) {
-                "/Users/lingodeer-yxg/Desktop/FFmpegUtil"
+                "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil"
             } else {
                 File(
                     FFmpegUtil::class.java.protectionDomain.codeSource.location
@@ -362,7 +362,7 @@ class FFmpegEbookToVideoUtil {
         val outImgFileList = ArrayList<File>()
 
         textList.forEachIndexed { imgIndex, textToDraw ->
-            ///Users/lingodeer-yxg/Desktop/FFmpegUtil/background_img/ebook/YT-story模板/005.png
+            ///Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/background_img/ebook/YT-story模板/005.png
             val bgImg = "$workingDir/background_img/ebook/YT-story模板/$bookId.png"
 
             IJ.openImage(bgImg).processor.apply {
@@ -696,7 +696,7 @@ class FFmpegEbookToVideoUtil {
         coverFileName: String,
         coverDuration: Int
     ): File {
-        ///Users/lingodeer-yxg/Desktop/FFmpegUtil/background_img/ebook/YT-story标题页模板/005.png
+        ///Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/background_img/ebook/YT-story标题页模板/005.png
         val bgImg = "$workingDir/background_img/ebook/YT-story标题页模板/$bookId.png"
         val font = Font("Playfair Display", Font.PLAIN, 105)
 

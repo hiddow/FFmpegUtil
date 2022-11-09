@@ -25,19 +25,19 @@ import kotlin.system.exitProcess
 fun main(args: Array<String>) {
 
 
-    for (nameEndFix in arrayOf("1")) {
+    for (nameEndFix in arrayOf("5")) {
         runBlocking {
             val ffmpegimgtovideoutilEN = FFmpegImgToVideoChineseLesson()
             val ffmpegimgtovideoutilJP = FFmpegImgToVideoChineseLesson()
             for (fFmpegImgToVideoUtil3 in arrayOf(ffmpegimgtovideoutilEN, ffmpegimgtovideoutilJP)) {
                 fFmpegImgToVideoUtil3.inputAudioDirPath =
-                    "/Users/lingodeer-yxg/Downloads/CS-Youtube听力练习-前三课/listening-practice-$nameEndFix/audio"
+                    "/Users/lingodeer-yxg/Desktop/视频课/素材/CS-Youtube听力练习/listening-practice-$nameEndFix/audio"
                 fFmpegImgToVideoUtil3.inputAudioSortExcelPath =
-                    "/Users/lingodeer-yxg/Downloads/CS-Youtube听力练习-前三课/listening-practice-$nameEndFix/listening-practice-${nameEndFix}-文本.xlsx"
+                    "/Users/lingodeer-yxg/Desktop/视频课/素材/CS-Youtube听力练习/listening-practice-$nameEndFix/listening-practice-${nameEndFix}-文本.xlsx"
                 fFmpegImgToVideoUtil3.bgPicPath =
-                    "/Users/lingodeer-yxg/Downloads/CS-Youtube听力练习-前三课/listening-practice-$nameEndFix/内页图/subtitle.png"
+                    "/Users/lingodeer-yxg/Desktop/视频课/素材/CS-Youtube听力练习/listening-practice-$nameEndFix/内页图/subtitle.png"
                 fFmpegImgToVideoUtil3.listenPicPath =
-                    "/Users/lingodeer-yxg/Downloads/CS-Youtube听力练习-前三课/listening-practice-$nameEndFix/内页图/listen.png"
+                    "/Users/lingodeer-yxg/Desktop/视频课/素材/CS-Youtube听力练习/listening-practice-$nameEndFix/内页图/listen.png"
             }
 
             launch(Dispatchers.IO) {
@@ -56,24 +56,18 @@ fun main(args: Array<String>) {
 class FFmpegImgToVideoChineseLesson {
     var bgIndex = 1
     private var isDebug = false
-    var hasCompressedAudio = false
     var isEnglish = false
     private var workingDir = ""
     private var workingTempDir = ""
 
-    var functionIndex = 2
-    var repeatCount = 3
     private var repeatGapTime = 3
     private var sentenceGapTime = 4
-    var startSortIndex = 1
-    var endSortIndex = 151
 
-    var outputFileName = "output(1-150)"
-    var listenPicPath = "/Users/lingodeer-yxg/Downloads/CS-travelphrase-视频-前两课/travelphrase-内页图/资源 1@2x.png"
-    var bgPicPath = "/Users/lingodeer-yxg/Downloads/CS-travelphrase-视频-前两课/travelphrase-内页图/资源 1@2x.png"
-    var inputAudioDirPath = "/Users/lingodeer-yxg/Downloads/CS-travelphrase-视频-前两课/travelphrase-f-1/audio"
-    var inputAudioSortExcelPath =
-        "/Users/lingodeer-yxg/Downloads/CS-travelphrase-视频-前两课/travelphrase-f-1/cn-travelphrase-f-1文本.xlsx"
+    var outputFileName = ""
+    var listenPicPath = ""
+    var bgPicPath = ""
+    var inputAudioDirPath = ""
+    var inputAudioSortExcelPath = ""
 
     private val repeatGameTimeFile get() = File("$workingTempDir/gap_time/$repeatGapTime.mp3")
     private val sentenceGapTimeFile get() = File("$workingTempDir/gap_time/$sentenceGapTime.mp3")
@@ -86,7 +80,7 @@ class FFmpegImgToVideoChineseLesson {
         println("protocol = $protocol")
         workingDir =
             if (isDebug) {
-                "/Users/lingodeer-yxg/Desktop/FFmpegUtil"
+                "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil"
             } else {
                 File(
                     FFmpegUtil::class.java.protectionDomain.codeSource.location
@@ -160,7 +154,7 @@ class FFmpegImgToVideoChineseLesson {
                     }
 
                     override fun doAfterAllAnalysed(context: AnalysisContext) {
-                        combineVideoWithSortedList(sortedExcelDataList.subList(0 , 10))
+                        combineVideoWithSortedList(sortedExcelDataList)
                     }
 
                 }).sheet().doRead()
@@ -181,15 +175,16 @@ class FFmpegImgToVideoChineseLesson {
         val cmdPath = "$workingDir/library/ffmpeg"
         val hanBrakePath = "$workingDir/library/HandBrakeCLI"
         val subList = sortedExcelDataList.subList(0, sortedExcelDataList.size)
-        val audioFileList = subList.map { File("$workingTempDir/compressed_audio/${it.ID}.mp3") }.filter {
-            it.exists()
-        }
 
         Utils.emptyFileDir(workingTempDir)
 
         println("step: 开始压缩音频")
         compressAudio(cmdPath, subList)
         println("step: 结束压缩音频")
+
+        val audioFileList = subList.map { File("$workingTempDir/compressed_audio/${it.ID}.mp3") }.filter {
+            it.exists()
+        }
 
         println("step: 开始生成间隔音频文件")
         generateGapTime(cmdPath)
@@ -398,7 +393,7 @@ class FFmpegImgToVideoChineseLesson {
             }
         }
 
-        inputVideoList.append("file '/Users/lingodeer-yxg/Downloads/CS-Youtube听力练习-前三课/listening-practice-片头片尾/片头-formated.mp4'")
+        inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/CS-Youtube听力练习/listening-practice-片头片尾/片头-formated.mp4'")
         inputVideoList.append("\n")
 
         for (audioFile in audioFileList) {
@@ -408,7 +403,7 @@ class FFmpegImgToVideoChineseLesson {
             inputVideoList.append("\n")
         }
 
-        inputVideoList.append("file '/Users/lingodeer-yxg/Downloads/CS-Youtube听力练习-前三课/listening-practice-片头片尾/片尾-formated.mp4'")
+        inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/CS-Youtube听力练习/listening-practice-片头片尾/片尾-formated.mp4'")
         inputVideoList.append("\n")
 
         val inputVideoListFile = File("$workingTempDir/inputVideoList.txt").apply {
@@ -453,6 +448,8 @@ class FFmpegImgToVideoChineseLesson {
                 }
 
             })
+
+        outputVideoFile.delete()
 
         println("step: 结束合并视频")
         println("输出文件路径：${outputVideoFormattedFile.path} 耗时：${(System.currentTimeMillis() - startTime) / 1000L} s")
@@ -676,7 +673,7 @@ class FFmpegImgToVideoChineseLesson {
             0
         }
 
-        val outlineRect = Rectangle(340+ 30, 150 + 30, 1310 - 60, 820 - 60)
+        val outlineRect = Rectangle(340 + 30, 150 + 30, 1310 - 60, 820 - 60)
 
         var contentRect = getContentRect(translateFont, translate)
 
@@ -707,7 +704,7 @@ class FFmpegImgToVideoChineseLesson {
         } else {
             0
         }
-        val outlineRect = Rectangle(340+ 30, 150 + 30, 1310 - 60, 970 - 60)
+        val outlineRect = Rectangle(340 + 30, 150 + 30, 1310 - 60, 970 - 60)
         val pinyinList = sortedExelData.PINYIN.split(" ")
         println(sortedExelData.SENTENCE)
         println(sortedExelData.PINYIN)
@@ -751,7 +748,8 @@ class FFmpegImgToVideoChineseLesson {
             }
 
             val startX = outlineRect.x + outlineRect.width / 2 - (sentenceWidth / 2) - 90
-            val startY = outlineRect.y + outlineRect.height / 2 - (sentenceHeight / 2) + (sentenceHeight / split.size) - 90
+            val startY =
+                outlineRect.y + outlineRect.height / 2 - (sentenceHeight / 2) + (sentenceHeight / split.size) - 90
 
             pinyinLineSentence.split("\n")
 
@@ -1107,7 +1105,7 @@ class FFmpegImgToVideoChineseLesson {
             }
         }
 
-        Runtime.getRuntime().exec("/Users/lingodeer-yxg/Desktop/FFmpegUtil/final.sh").apply {
+        Runtime.getRuntime().exec("/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/final.sh").apply {
             for (readLine in InputStreamReader(this.inputStream).readLines()) {
                 println(readLine)
             }

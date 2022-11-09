@@ -47,12 +47,12 @@ fun main(args: Array<String>) {
 //    FFmpegImgToVideoUtil.main()
 
 //    val videoList = listOf(
-//        "/Users/lingodeer-yxg/Desktop/FFmpegUtil/output/enpal-片头.mp4",
-//        "/Users/lingodeer-yxg/Desktop/FFmpegUtil/output/output-formatted.mp4",
-//        "/Users/lingodeer-yxg/Desktop/FFmpegUtil/output/enpal-片尾.mp4"
+//        "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/output/enpal-片头.mp4",
+//        "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/output/output-formatted.mp4",
+//        "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/output/enpal-片尾.mp4"
 //    )
 //
-//    Mp4ParseUtil.mergeVideo(videoList, "/Users/lingodeer-yxg/Desktop/FFmpegUtil/output/", "output-full.mp4")
+//    Mp4ParseUtil.mergeVideo(videoList, "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/output/", "output-full.mp4")
 //    FFmpegUtil2.processImg()
 }
 
@@ -72,7 +72,7 @@ object FFmpegImgToVideoUtil_2 {
 
     var outputFileName = "output(1-150).mp4"
     var inputAudioDirPath = "/Users/lingodeer-yxg/Downloads/YT-Ref-compressed"
-    var inputAudioSortExcelPath = "/Users/lingodeer-yxg/Desktop/FFmpegUtil/1077-with-Japanese(排序后).xlsx"
+    var inputAudioSortExcelPath = "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/1077-with-Japanese(排序后).xlsx"
 
     init {
         val protocol = javaClass.getResource("")?.protocol ?: ""
@@ -82,7 +82,7 @@ object FFmpegImgToVideoUtil_2 {
         println("protocol = $protocol")
         workingDir =
             if (isDebug) {
-                "/Users/lingodeer-yxg/Desktop/FFmpegUtil"
+                "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil"
             } else {
                 File(
                     FFmpegUtil::class.java.protectionDomain.codeSource.location
@@ -106,7 +106,7 @@ object FFmpegImgToVideoUtil_2 {
             println("this.format_name = " + this.format_name)
         }
 
-        ffprobe.probe("/Users/lingodeer-yxg/Desktop/FFmpegUtil/temp/output/03.mp4").format.apply {
+        ffprobe.probe("/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/temp/output/03.mp4").format.apply {
             println("this.size = " + this.size)
             println("this.bit_rate = " + this.bit_rate)
             println("this.format_long_name = " + this.format_long_name)

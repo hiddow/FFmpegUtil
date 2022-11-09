@@ -8,7 +8,7 @@ import kotlin.also
 
 object Mp4ParseUtil {
 
-    val ffmpegPath = "/Users/lingodeer-yxg/Desktop/FFmpegUtil/library/ffmpeg"
+    val ffmpegPath = "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/library/ffmpeg"
 
     fun mergeVideo(list: List<String>, outputDir: String, outputFile: String): String? {
         return try {

@@ -45,7 +45,7 @@ object FFmpegUtil {
         println("protocol = $protocol")
         workingDir =
             if (isDebug) {
-                "/Users/lingodeer-yxg/Desktop/FFmpegUtil"
+                "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil"
             } else {
                 File(
                     FFmpegUtil::class.java.protectionDomain.codeSource.location
@@ -69,7 +69,7 @@ object FFmpegUtil {
             println("this.format_name = " + this.format_name)
         }
 
-        ffprobe.probe("/Users/lingodeer-yxg/Desktop/FFmpegUtil/temp/output/03.mp4").format.apply {
+        ffprobe.probe("/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/temp/output/03.mp4").format.apply {
             println("this.size = " + this.size)
             println("this.bit_rate = " + this.bit_rate)
             println("this.format_long_name = " + this.format_long_name)

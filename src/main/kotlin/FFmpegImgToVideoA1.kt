@@ -79,7 +79,7 @@ class FFmpegImgToVideoA1 {
         println("protocol = $protocol")
         workingDir =
             if (isDebug) {
-                "/Users/lingodeer-yxg/Desktop/FFmpegUtil"
+                "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil"
             } else {
                 File(
                     FFmpegUtil::class.java.protectionDomain.codeSource.location
@@ -1007,7 +1007,7 @@ class FFmpegImgToVideoA1 {
             }
         }
 
-        Runtime.getRuntime().exec("/Users/lingodeer-yxg/Desktop/FFmpegUtil/final.sh").apply {
+        Runtime.getRuntime().exec("/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/final.sh").apply {
             for (readLine in InputStreamReader(this.inputStream).readLines()) {
                 println(readLine)
             }
