@@ -25,19 +25,19 @@ import kotlin.system.exitProcess
 fun main(args: Array<String>) {
 
 
-    for (nameEndFix in arrayOf("5")) {
+    for (nameEndFix in arrayOf("15")) {
         runBlocking {
             val ffmpegimgtovideoutilEN = FFmpegImgToVideoChineseLesson()
             val ffmpegimgtovideoutilJP = FFmpegImgToVideoChineseLesson()
             for (fFmpegImgToVideoUtil3 in arrayOf(ffmpegimgtovideoutilEN, ffmpegimgtovideoutilJP)) {
                 fFmpegImgToVideoUtil3.inputAudioDirPath =
-                    "/Users/lingodeer-yxg/Desktop/视频课/素材/CS-Youtube听力练习/listening-practice-$nameEndFix/audio"
+                    "/Users/yxg/Documents/from-iMac/视频课/素材/CS-Youtube听力练习/listening-practice-$nameEndFix/audio"
                 fFmpegImgToVideoUtil3.inputAudioSortExcelPath =
-                    "/Users/lingodeer-yxg/Desktop/视频课/素材/CS-Youtube听力练习/listening-practice-$nameEndFix/listening-practice-${nameEndFix}-文本.xlsx"
+                    "/Users/yxg/Documents/from-iMac/视频课/素材/CS-Youtube听力练习/listening-practice-$nameEndFix/listening-practice-${nameEndFix}-文本.xlsx"
                 fFmpegImgToVideoUtil3.bgPicPath =
-                    "/Users/lingodeer-yxg/Desktop/视频课/素材/CS-Youtube听力练习/listening-practice-$nameEndFix/内页图/subtitle.png"
+                    "/Users/yxg/Documents/from-iMac/视频课/素材/CS-Youtube听力练习/listening-practice-$nameEndFix/内页图/subtitle.png"
                 fFmpegImgToVideoUtil3.listenPicPath =
-                    "/Users/lingodeer-yxg/Desktop/视频课/素材/CS-Youtube听力练习/listening-practice-$nameEndFix/内页图/listen.png"
+                    "/Users/yxg/Documents/from-iMac/视频课/素材/CS-Youtube听力练习/listening-practice-$nameEndFix/内页图/listen.png"
             }
 
             launch(Dispatchers.IO) {
@@ -80,7 +80,7 @@ class FFmpegImgToVideoChineseLesson {
         println("protocol = $protocol")
         workingDir =
             if (isDebug) {
-                "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil"
+                "/Users/yxg/Documents/from-iMac/视频课/FFmpegUtil"
             } else {
                 File(
                     FFmpegUtil::class.java.protectionDomain.codeSource.location
@@ -170,9 +170,9 @@ class FFmpegImgToVideoChineseLesson {
         val startTime = System.currentTimeMillis()
         val inputAudioImgDirPath = "$workingTempDir/output_img"
 
-        val ffprobe = FFprobe("$workingDir/library/ffprobe")
+        val ffprobe = FFprobe("ffprobe")
 
-        val cmdPath = "$workingDir/library/ffmpeg"
+        val cmdPath = "ffmpeg"
         val hanBrakePath = "$workingDir/library/HandBrakeCLI"
         val subList = sortedExcelDataList.subList(0, sortedExcelDataList.size)
 
@@ -393,7 +393,7 @@ class FFmpegImgToVideoChineseLesson {
             }
         }
 
-        inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/CS-Youtube听力练习/listening-practice-片头片尾/片头-formated.mp4'")
+        inputVideoList.append("file '/Users/yxg/Documents/from-iMac/视频课/素材/CS-Youtube听力练习/listening-practice-片头片尾/片头-formated.mp4'")
         inputVideoList.append("\n")
 
         for (audioFile in audioFileList) {
@@ -403,7 +403,7 @@ class FFmpegImgToVideoChineseLesson {
             inputVideoList.append("\n")
         }
 
-        inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/CS-Youtube听力练习/listening-practice-片头片尾/片尾-formated.mp4'")
+        inputVideoList.append("file '/Users/yxg/Documents/from-iMac/视频课/素材/CS-Youtube听力练习/listening-practice-片头片尾/片尾-formated.mp4'")
         inputVideoList.append("\n")
 
         val inputVideoListFile = File("$workingTempDir/inputVideoList.txt").apply {
@@ -1105,7 +1105,7 @@ class FFmpegImgToVideoChineseLesson {
             }
         }
 
-        Runtime.getRuntime().exec("/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/final.sh").apply {
+        Runtime.getRuntime().exec("/Users/yxg/Documents/from-iMac/视频课/FFmpegUtil/final.sh").apply {
             for (readLine in InputStreamReader(this.inputStream).readLines()) {
                 println(readLine)
             }

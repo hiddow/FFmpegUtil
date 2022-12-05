@@ -34,7 +34,7 @@ val epBookParagraphJsonAdapter: JsonAdapter<EPParagraph> =
 
 fun main(args: Array<String>) {
     arrayOf("005", "003", "011", "015", "001", "007", "004", "002", "009")
-    val indexArray = arrayOf("005", "003", "011", "015", "001", "007", "004", "002", "009")
+    val indexArray = arrayOf("001")
 
     indexArray.forEachIndexed { index, bookIdStr ->
         FFmpegEbookToVideoUtil().apply {
@@ -189,7 +189,7 @@ class FFmpegEbookToVideoUtil {
     ): File {
         val outputFileName = "book-$bookId-$locateCode.mp4"
 
-        inputVideoList.append("file '$workingDir/enpal-片头-new.mp4'")
+        inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/ebook/片头片尾/enpal-片头-new.mp4'")
         inputVideoList.append("\n")
 
         for (audioFile in videoFileList) {
@@ -197,7 +197,7 @@ class FFmpegEbookToVideoUtil {
             inputVideoList.append("\n")
         }
 
-        inputVideoList.append("file '$workingDir/enpal-片尾-new-$locateCode.mp4'")
+        inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/ebook/片头片尾/enpal-片尾-new-${locateCode}.mp4'")
         inputVideoList.append("\n")
 
         val inputVideoListFile = File("$workingTempDir/inputVideoList-$locateCode.txt").apply {

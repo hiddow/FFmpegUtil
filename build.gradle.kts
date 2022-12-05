@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.7.10"
 }
 
 group = "org.example"
@@ -13,9 +13,9 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-    implementation("aws.sdk.kotlin:s3:0.16.0")
-    implementation("aws.sdk.kotlin:polly:0.16.0")
-    implementation("aws.sdk.kotlin:translate:0.16.0")
+    implementation("aws.sdk.kotlin:s3:0.17.12-beta")
+    implementation("aws.sdk.kotlin:polly:0.17.12-beta")
+    implementation("aws.sdk.kotlin:translate:0.17.12-beta")
     implementation("net.imagej:ij:1.51h")
     implementation("net.bramp.ffmpeg:ffmpeg:0.7.0")
     implementation ("com.alibaba:easyexcel:3.1.1")

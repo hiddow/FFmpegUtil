@@ -27,25 +27,25 @@ import kotlin.system.exitProcess
 fun main(args: Array<String>) {
 
 
-    for (nameEndFix in arrayOf("7", "8")) {
+    for (nameEndFix in arrayOf("1")) {
         runBlocking {
-            val ffmpegimgtovideoutilEN = FFmpegImgToVideoKoreanTravel()
-            val ffmpegimgtovideoutilJP = FFmpegImgToVideoKoreanTravel()
+            val ffmpegimgtovideoutilEN = FFmpegImgToVideoKoreanGrammarSent()
+            val ffmpegimgtovideoutilJP = FFmpegImgToVideoKoreanGrammarSent()
             for (fFmpegImgToVideoUtil3 in arrayOf(ffmpegimgtovideoutilEN, ffmpegimgtovideoutilJP)) {
                 fFmpegImgToVideoUtil3.inputAudioDirPath =
-                    "/Users/yxg/Documents/from-iMac/视频课/素材/YT_KR-EN词汇/YT_KR-EN词汇-$nameEndFix-音频"
+                    "/Users/yxg/Documents/from-iMac/视频课/素材/韩语-睡觉听/Korean-Learn-while-sleeping-${nameEndFix}-音频"
                 fFmpegImgToVideoUtil3.inputAudioSortExcelPath =
-                    "/Users/yxg/Documents/from-iMac/视频课/素材/YT_KR-EN词汇/YT_KR-EN词汇-$nameEndFix.xlsx"
+                    "/Users/yxg/Documents/from-iMac/视频课/素材/韩语-睡觉听/Korean-Learn-while-sleeping-${nameEndFix}.xlsx"
                 fFmpegImgToVideoUtil3.bgPicPath =
-                    "/Users/yxg/Documents/from-iMac/视频课/素材/YT_KR-EN词汇/YT_韩语词汇背景/背景4.png"
+                    "/Users/yxg/Documents/from-iMac/视频课/素材/韩语-睡觉听/Korean-Learn-while-sleeping-内页.png"
             }
 
             launch(Dispatchers.IO) {
                 ffmpegimgtovideoutilEN.isEnglish = true
                 ffmpegimgtovideoutilEN.outputFileName =
-                    "YT_KR-EN词汇-$nameEndFix"
+                    "YT_KR-GrammarSent-$nameEndFix"
                 ffmpegimgtovideoutilEN.awsOutFileDirName =
-                    "YT_KR-EN词汇"
+                    "YT_KR-GrammarSent"
                 ffmpegimgtovideoutilEN.main()
             }
         }
@@ -54,7 +54,7 @@ fun main(args: Array<String>) {
 
 }
 
-class FFmpegImgToVideoKoreanTravel {
+class FFmpegImgToVideoKoreanGrammarSent {
     var bgIndex = 1
     private var isDebug = false
     var hasCompressedAudio = false
@@ -78,6 +78,11 @@ class FFmpegImgToVideoKoreanTravel {
     var bgPicPath = ""
     var inputAudioDirPath = ""
     var inputAudioSortExcelPath = ""
+
+    var pinyinSize = 80
+    var sentenceSize = 100
+    var translateSize = 60
+    var translationColor = "#F2EFAF"
 
     private val repeatGameTimeFile get() = File("$workingTempDir/gap_time/$repeatGapTime.mp3")
     private val sentenceGapTimeFile get() = File("$workingTempDir/gap_time/$sentenceGapTime.mp3")
@@ -199,7 +204,7 @@ class FFmpegImgToVideoKoreanTravel {
         compressAudio(cmdPath, subList)
         println("step: 结束压缩音频")
 
-        val audioFileList = subList.map { File("$workingTempDir/compressed_audio/kr-gamevocab-w-${it.ID}.mp3") }.filter {
+        val audioFileList = subList.map { File("$workingTempDir/compressed_audio/kr-gamegramsent-s-${it.ID}.mp3") }.filter {
             it.exists()
         }
 
@@ -230,14 +235,20 @@ class FFmpegImgToVideoKoreanTravel {
                         val inputImgList = StringBuilder()
 
                         val audioFileName = audioFile.name.split(".")[0]
-                        val probeResult = ffprobe.probe(audioFile.path)
-                        val fFmpegFormat = probeResult.format
+                        var probeResult = ffprobe.probe(audioFile.path)
+                        var fFmpegFormat = probeResult.format
                         val curAudioDuration = fFmpegFormat.duration
 
                         val localAudioFile = File(audioFile.path.replace(".mp3", "-en.mp3"))
                         val localProbeResult = ffprobe.probe(localAudioFile.path)
                         val localFFmpegFormat = localProbeResult.format
                         val localAudioDuration = localFFmpegFormat.duration
+
+                        val slowAudioFile = File(audioFile.path.replace(".mp3", "-slow.mp3"))
+
+                        probeResult = ffprobe.probe(slowAudioFile.path)
+                        fFmpegFormat = probeResult.format
+                        val slowAudioDuration = fFmpegFormat.duration
 
                         if (audioFileList.indexOf(audioFile) == 0) {
                             inputAudioList.append("file '${startGapTimeFile.path}'")
@@ -254,7 +265,7 @@ class FFmpegImgToVideoKoreanTravel {
                         inputAudioList.append("file '${gapTime2SecondFile.path}'")
                         inputAudioList.append("\n")
 
-                        inputAudioList.append("file '${audioFile.path}'")
+                        inputAudioList.append("file '${slowAudioFile.path}'")
                         inputAudioList.append("\n")
                         inputAudioList.append("file '${gapTime2SecondFile.path}'")
                         inputAudioList.append("\n")
@@ -282,7 +293,7 @@ class FFmpegImgToVideoKoreanTravel {
                         inputImgList.append("\n")
                         inputImgList.append("file '$inputAudioImgDirPath/${fistPicFileName}'")
                         inputImgList.append("\n")
-                        inputImgList.append("duration ${curAudioDuration + gapTime2Second}")
+                        inputImgList.append("duration ${slowAudioDuration + gapTime2Second}")
                         inputImgList.append("\n")
                         if (isEnglish) {
                             inputImgList.append("file '$inputAudioImgDirPath/${fistPicFileName}'")
@@ -488,7 +499,7 @@ class FFmpegImgToVideoKoreanTravel {
                 }
 
             })
-
+        outputVideoFile.delete()
         println("step: 结束合并视频")
         println("输出文件路径：${outputVideoFormattedFile.path} 耗时：${(System.currentTimeMillis() - startTime) / 1000L} s")
     }
@@ -496,7 +507,7 @@ class FFmpegImgToVideoKoreanTravel {
     private fun compressAudio(cmdPath: String, subList: List<SortedExcelChineseTravelData2>) {
         runBlocking {
             for (sortedExcelData in subList) {
-                val listFile = File("$inputAudioDirPath/kr-gamevocab-w-${sortedExcelData.ID}.mp3")
+                val listFile = File("$inputAudioDirPath/kr-gamegramsent-s-${sortedExcelData.ID}.mp3")
                 launch(Dispatchers.IO) {
                     val outputFile =
                         File("$workingTempDir/compressed_audio/${(listFile.name.split(".")[0])}.mp3").apply {
@@ -505,6 +516,21 @@ class FFmpegImgToVideoKoreanTravel {
                         }
                     ShellUtils.run(
                         "$cmdPath -y -i ${listFile.path} -ac 2 -ar 48000 ${outputFile.path}",
+                        object : ShellUtils.OnCommandExecOutputListener {
+                            override fun onSuccess(line: String?) {
+                            }
+
+                            override fun onError(line: String?) {
+                            }
+                        })
+
+                    val outputSlowAudioFile =
+                        File("$workingTempDir/compressed_audio/${(listFile.name.split(".")[0])}-slow.mp3").apply {
+                            if (!this.parentFile.exists())
+                                this.parentFile.mkdirs()
+                        }
+                    ShellUtils.run(
+                        "$cmdPath -y -i ${outputFile.path} -filter:a atempo=0.78 ${outputSlowAudioFile.path}",
                         object : ShellUtils.OnCommandExecOutputListener {
                             override fun onSuccess(line: String?) {
                             }
@@ -709,7 +735,7 @@ class FFmpegImgToVideoKoreanTravel {
 //            } else {
 //                setColor(Color.decode("#2F6DAD"))
 //            }
-            setColor(Color.decode("#03001B"))
+            setColor(Color.decode("#FFFFFF"))
             setFont(indexFont)
             setAntialiasedText(true)
             drawIndex(indexFont, index + 1)
@@ -717,7 +743,7 @@ class FFmpegImgToVideoKoreanTravel {
             drawTranslate(sortedExcelData.TRANS_EN)
 
             val outputImgFile =
-                File("$workingTempDir/output_img/kr-gamevocab-w-${sortedExcelData.ID}-pic2.png").apply {
+                File("$workingTempDir/output_img/kr-gamegramsent-s-${sortedExcelData.ID}-pic2.png").apply {
                     if (!parentFile.exists())
                         parentFile.mkdirs()
                 }
@@ -759,18 +785,18 @@ class FFmpegImgToVideoKoreanTravel {
     }
 
     private fun ImageProcessor.drawTranslate(translate: String) {
-        var translateFont = Font("Apple SD Gothic Neo", Font.PLAIN, 170)
-        setColor(Color.decode("#0082B5"))
+        var translateFont = Font("PingFangSC-Semibold", Font.PLAIN, translateSize)
+        setColor(Color.decode(translationColor))
 
         setFont(translateFont)
         setAntialiasedText(true)
 
-        val outlineRect = Rectangle(72 + 30, 135 + 30, 1775 - 60, 810 - 60)
+        val outlineRect = Rectangle(72 + 30, 0, 1775 - 60, 1080 - 350)
 
         var contentRect = getContentRect(translateFont, translate)
 
         while (contentRect.width > outlineRect.width) {
-            translateFont = Font("Apple SD Gothic Neo", Font.PLAIN, translateFont.size - 1)
+            translateFont = Font("PingFangSC-Semibold", Font.PLAIN, translateFont.size - 1)
             setFont(translateFont)
             setAntialiasedText(true)
             contentRect = getContentRect(translateFont, translate)
@@ -783,12 +809,12 @@ class FFmpegImgToVideoKoreanTravel {
         }
 
         var startX = outlineRect.x + outlineRect.width / 2 - (contentRect.width - punchOffsetX) / 2
-        val startY = outlineRect.y + outlineRect.height - 70
+        val startY = outlineRect.y + outlineRect.height
 
 
         if (font.size < 50) {
             //换行
-            translateFont = Font("Apple SD Gothic Neo", Font.PLAIN, 50)
+            translateFont = Font("PingFangSC-Semibold", Font.PLAIN, 50)
             setFont(translateFont)
 
             val firstLineSize = translate.split(" ").size / 2
@@ -817,7 +843,7 @@ class FFmpegImgToVideoKoreanTravel {
             val split = realWriteSentence.split("\n")
 
             while (getMaxWidth(font, split) > outlineRect.width) {
-                translateFont = Font("Apple SD Gothic Neo", Font.PLAIN, font.size - 1)
+                translateFont = Font("PingFangSC-Semibold", Font.PLAIN, font.size - 1)
                 setFont(translateFont)
                 setAntialiasedText(true)
             }
@@ -850,12 +876,12 @@ class FFmpegImgToVideoKoreanTravel {
     }
 
     private fun ImageProcessor.drawSentence(sortedExelData: SortedExcelChineseTravelData2) {
-        var font = Font("Apple SD Gothic Neo", Font.PLAIN, 250)
-        setColor(Color.decode("#03001B"))
+        var font = Font("Apple SD Gothic Neo", Font.PLAIN, sentenceSize)
+        setColor(Color.decode("#FFFFFF"))
         setFont(font)
         setAntialiasedText(true)
 
-        var pinyinFont = Font("PingFangSC-Light", Font.PLAIN, 120)
+//        var pinyinFont = Font("PingFangSC-Light", Font.PLAIN, pinyinSize)
 
         val stringBuilder = StringBuilder()
         for (s in sortedExelData.SENTENCE.split("/")) {
@@ -880,7 +906,7 @@ class FFmpegImgToVideoKoreanTravel {
 
         val sentence = stringBuilder.toString()
 
-        val luoma = luomaStringBuilder.deleteCharAt(luomaStringBuilder.length - 1).toString()
+//        val luoma = luomaStringBuilder.deleteCharAt(luomaStringBuilder.length - 1).toString()
 
         var contentRect = getContentRect(font, sentence)
         val punchOffsetX = if (Utils.isPunch(sentence.last().toString())) {
@@ -888,7 +914,7 @@ class FFmpegImgToVideoKoreanTravel {
         } else {
             0
         }
-        val outlineRect = Rectangle(72 + 30, 135 + 30, 1775 - 60, 810 - 60)
+        val outlineRect = Rectangle(72 + 30, 350, 1775 - 60, 1080)
 
 
         while (contentRect.width > outlineRect.width) {
@@ -902,7 +928,7 @@ class FFmpegImgToVideoKoreanTravel {
 
         println("font.size = ${font.size}")
         var startX = outlineRect.x + outlineRect.width / 2 - ((contentRect.width - punchOffsetX) / 2)
-        var startY = outlineRect.y + outlineRect.height / 2 - (contentRect.height / 2) + contentRect.height
+        var startY = outlineRect.y + contentRect.height
         if (font.size < 60) {
             //换行
             font = Font("Apple SD Gothic Neo", Font.PLAIN, 60)
@@ -963,101 +989,101 @@ class FFmpegImgToVideoKoreanTravel {
             drawString(sentence, startX, startY)
         }
 
-        setFont(pinyinFont)
-        setAntialiasedText(true)
+//        setFont(pinyinFont)
+//        setAntialiasedText(true)
 
-        var luomaContentRect = getContentRect(pinyinFont, luoma)
-
-
-        while (luomaContentRect.width > outlineRect.width) {
-            pinyinFont = Font("PingFangSC-Light", Font.PLAIN, pinyinFont.size - 1)
-            setFont(pinyinFont)
-            setAntialiasedText(true)
-            luomaContentRect = getContentRect(pinyinFont, luoma)
-        }
-
-        val luomaPunchOffsetX = if (Utils.isPunch(luoma.last().toString())) {
-            getContentRect(pinyinFont, luoma.last().toString()).width
-        } else {
-            0
-        }
-
-        var luomaStartX = outlineRect.x + outlineRect.width / 2 - ((luomaContentRect.width - luomaPunchOffsetX) / 2)
-        var luomaStartY = startY - contentHeight
-
-        if (pinyinFont.size < 60) {
-            //换行
-            pinyinFont = Font("PingFangSC-Light", Font.PLAIN, 60)
-            setFont(pinyinFont)
-
-            val firstLineSize = sortedExelData.PINYIN.split("/").size / 2
+//        var luomaContentRect = getContentRect(pinyinFont, luoma)
 
 
-            val sentenceWithLines = StringBuilder()
-
-            sortedExelData.PINYIN.split("/").forEachIndexed { index, s ->
-                val nextIndex = index + 1
-                if (index <= firstLineSize) {
-                    sentenceWithLines.append(s.replace("_", ""))
-                    if (index == firstLineSize) {
-                        sentenceWithLines.append("\n")
-                    } else {
-                        if (nextIndex < pinyinList.size) {
-                            if (!Utils.isPunch(pinyinList[nextIndex])) {
-                                sentenceWithLines.append(" ")
-                            }
-                        } else {
-                            sentenceWithLines.append(" ")
-                        }
-                    }
-                } else {
-                    sentenceWithLines.append(s.replace("_", ""))
-                    if (index != sortedExelData.PINYIN.split("/").size) {
-                        if (nextIndex < pinyinList.size) {
-                            if (!Utils.isPunch(pinyinList[nextIndex])) {
-                                sentenceWithLines.append(" ")
-                            }
-                        } else {
-                            sentenceWithLines.append(" ")
-                        }
-                    }
-                }
-            }
-
-            val realWriteSentence = sentenceWithLines.toString()
-
-            val split = realWriteSentence.split("\n")
-
-            while (getMaxWidth(pinyinFont, split) > outlineRect.width) {
-                pinyinFont = Font("PingFangSC-Light", Font.PLAIN, pinyinFont.size - 1)
-                setFont(pinyinFont)
-                setAntialiasedText(true)
-            }
-
-            var sentenceHeight = 0
-
-            for (s in split) {
-                getContentRect(pinyinFont, s.replace("/", "")).apply {
-                    sentenceHeight += this.height
-                }
-            }
-
-            luomaStartY = startY - sentenceHeight - 30
-
-            var preLineHeight = 0
-            for (s in split) {
-                getContentRect(pinyinFont, s).apply {
-                    luomaStartX = outlineRect.x + outlineRect.width / 2 - (this.width / 2)
-                    val curLineStarY = luomaStartY + preLineHeight
-                    drawString(s, luomaStartX, curLineStarY)
-                    preLineHeight += this.height
-                }
-            }
-
-
-        } else {
-            drawString(luoma, luomaStartX, luomaStartY)
-        }
+//        while (luomaContentRect.width > outlineRect.width) {
+//            pinyinFont = Font("PingFangSC-Light", Font.PLAIN, pinyinFont.size - 1)
+//            setFont(pinyinFont)
+//            setAntialiasedText(true)
+//            luomaContentRect = getContentRect(pinyinFont, luoma)
+//        }
+//
+//        val luomaPunchOffsetX = if (Utils.isPunch(luoma.last().toString())) {
+//            getContentRect(pinyinFont, luoma.last().toString()).width
+//        } else {
+//            0
+//        }
+//
+//        var luomaStartX = outlineRect.x + outlineRect.width / 2 - ((luomaContentRect.width - luomaPunchOffsetX) / 2)
+//        var luomaStartY = startY - contentHeight
+//
+//        if (pinyinFont.size < 60) {
+//            //换行
+//            pinyinFont = Font("PingFangSC-Light", Font.PLAIN, 60)
+//            setFont(pinyinFont)
+//
+//            val firstLineSize = sortedExelData.PINYIN.split("/").size / 2
+//
+//
+//            val sentenceWithLines = StringBuilder()
+//
+//            sortedExelData.PINYIN.split("/").forEachIndexed { index, s ->
+//                val nextIndex = index + 1
+//                if (index <= firstLineSize) {
+//                    sentenceWithLines.append(s.replace("_", ""))
+//                    if (index == firstLineSize) {
+//                        sentenceWithLines.append("\n")
+//                    } else {
+//                        if (nextIndex < pinyinList.size) {
+//                            if (!Utils.isPunch(pinyinList[nextIndex])) {
+//                                sentenceWithLines.append(" ")
+//                            }
+//                        } else {
+//                            sentenceWithLines.append(" ")
+//                        }
+//                    }
+//                } else {
+//                    sentenceWithLines.append(s.replace("_", ""))
+//                    if (index != sortedExelData.PINYIN.split("/").size) {
+//                        if (nextIndex < pinyinList.size) {
+//                            if (!Utils.isPunch(pinyinList[nextIndex])) {
+//                                sentenceWithLines.append(" ")
+//                            }
+//                        } else {
+//                            sentenceWithLines.append(" ")
+//                        }
+//                    }
+//                }
+//            }
+//
+//            val realWriteSentence = sentenceWithLines.toString()
+//
+//            val split = realWriteSentence.split("\n")
+//
+//            while (getMaxWidth(pinyinFont, split) > outlineRect.width) {
+//                pinyinFont = Font("PingFangSC-Light", Font.PLAIN, pinyinFont.size - 1)
+//                setFont(pinyinFont)
+//                setAntialiasedText(true)
+//            }
+//
+//            var sentenceHeight = 0
+//
+//            for (s in split) {
+//                getContentRect(pinyinFont, s.replace("/", "")).apply {
+//                    sentenceHeight += this.height
+//                }
+//            }
+//
+//            luomaStartY = startY - sentenceHeight - 30
+//
+//            var preLineHeight = 0
+//            for (s in split) {
+//                getContentRect(pinyinFont, s).apply {
+//                    luomaStartX = outlineRect.x + outlineRect.width / 2 - (this.width / 2)
+//                    val curLineStarY = luomaStartY + preLineHeight
+//                    drawString(s, luomaStartX, curLineStarY)
+//                    preLineHeight += this.height
+//                }
+//            }
+//
+//
+//        } else {
+//            drawString(luoma, luomaStartX, luomaStartY)
+//        }
 
 //        if (contentRect.width > (outlineRect.width)) {
 //            val firstLineSentence = StringBuilder()
@@ -1195,7 +1221,7 @@ class FFmpegImgToVideoKoreanTravel {
             runBlocking {
                 for (sortedExcelData in sortedExcelDataList) {
                     val localAudioFile =
-                        File("$workingDir/aws-audio/$awsOutFileDirName/" + "kr-gamevocab-w-${sortedExcelData.ID}" + "-en.mp3")
+                        File("$workingDir/aws-audio/$awsOutFileDirName/" + "kr-gamegramsent-s-${sortedExcelData.ID}" + "-en.mp3")
                     println(localAudioFile.path)
                     launch {
                         getMp3AndJson(
