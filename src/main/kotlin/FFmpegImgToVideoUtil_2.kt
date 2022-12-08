@@ -98,7 +98,7 @@ object FFmpegImgToVideoUtil_2 {
     }
 
     fun test() {
-        val ffprobe = FFprobe("$workingDir/library/ffprobe")
+        val ffprobe = FFprobe("ffprobe")
         ffprobe.probe("/Users/lingodeer-yxg/Downloads/片头.mp4").format.apply {
             println("this.size = " + this.size)
             println("this.bit_rate = " + this.bit_rate)
@@ -187,9 +187,9 @@ object FFmpegImgToVideoUtil_2 {
 
         val inputAudioImgDirPath = "$workingTempDir/output_img"
 
-        val ffprobe = FFprobe("$workingDir/library/ffprobe")
+        val ffprobe = FFprobe("ffprobe")
 
-        val cmdPath = "$workingDir/library/ffmpeg"
+        val cmdPath = "ffmpeg"
 
         println("step: 开始压缩音频")
 

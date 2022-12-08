@@ -1,6 +1,9 @@
 import java.io.File
 
 object Utils {
+
+    const val parentDir = "/Users/lingodeer-yxg/Desktop/视频课"
+
     fun <T> averageAssignFixLength(source: List<T>?, splitItemNum: Int): List<List<T>> {
         val result = ArrayList<List<T>>()
 

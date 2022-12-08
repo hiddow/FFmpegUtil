@@ -61,7 +61,7 @@ object FFmpegUtil {
     }
 
     fun test() {
-        val ffprobe = FFprobe("$workingDir/library/ffprobe")
+        val ffprobe = FFprobe("ffprobe")
         ffprobe.probe("/Users/lingodeer-yxg/Downloads/片头.mp4").format.apply {
             println("this.size = " + this.size)
             println("this.bit_rate = " + this.bit_rate)
@@ -152,7 +152,7 @@ object FFmpegUtil {
 
 
     fun combineAudioWithSortedList(sortedIds: ArrayList<String>) {
-        val cmdPath = "$workingDir/library/ffmpeg"
+        val cmdPath = "ffmpeg"
 
         println("step: 开始压缩音频")
         File("$workingTempDir/compressed_audio").apply {
@@ -255,9 +255,9 @@ object FFmpegUtil {
      */
     fun combineVideoWithSortedList(sortedIds: ArrayList<String>) {
 
-        val ffprobe = FFprobe("$workingDir/library/ffprobe")
+        val ffprobe = FFprobe("ffprobe")
 
-        val cmdPath = "$workingDir/library/ffmpeg"
+        val cmdPath = "ffmpeg"
 
         println("step: 开始压缩音频")
 //        File("$workingTempDir/compressed_audio").apply {

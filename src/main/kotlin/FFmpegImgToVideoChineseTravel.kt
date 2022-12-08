@@ -31,11 +31,11 @@ fun main(args: Array<String>) {
             val ffmpegimgtovideoutilJP = FFmpegImgToVideoChineseTravel()
             for (fFmpegImgToVideoUtil3 in arrayOf(ffmpegimgtovideoutilEN, ffmpegimgtovideoutilJP)) {
                 fFmpegImgToVideoUtil3.inputAudioDirPath =
-                    "/Users/lingodeer-yxg/Downloads/CS-travelphrase-视频-前两课/travelphrase-f-$nameEndFix/audio"
+                    "${Utils.parentDir}/素材/CS-travelphrase-视频/travelphrase-f-$nameEndFix/audio"
                 fFmpegImgToVideoUtil3.inputAudioSortExcelPath =
-                    "/Users/lingodeer-yxg/Downloads/CS-travelphrase-视频-前两课/travelphrase-f-$nameEndFix/cn-travelphrase-f-${nameEndFix}文本.xlsx"
+                    "${Utils.parentDir}/素材/CS-travelphrase-视频/travelphrase-f-$nameEndFix/cn-travelphrase-f-${nameEndFix}文本.xlsx"
                 fFmpegImgToVideoUtil3.bgPicPath =
-                    "/Users/lingodeer-yxg/Downloads/CS-travelphrase-视频-前两课/travelphrase-内页图/资源 ${nameEndFix}@2x.png"
+                    "${Utils.parentDir}/素材/CS-travelphrase-视频/travelphrase-内页图/资源 ${nameEndFix}@2x.png"
             }
 
             launch(Dispatchers.IO) {
@@ -67,10 +67,10 @@ class FFmpegImgToVideoChineseTravel {
     var endSortIndex = 151
 
     var outputFileName = "output(1-150)"
-    var bgPicPath = "/Users/lingodeer-yxg/Downloads/CS-travelphrase-视频-前两课/travelphrase-内页图/资源 1@2x.png"
-    var inputAudioDirPath = "/Users/lingodeer-yxg/Downloads/CS-travelphrase-视频-前两课/travelphrase-f-1/audio"
+    var bgPicPath = "${Utils.parentDir}/素材/CS-travelphrase-视频/travelphrase-内页图/资源 1@2x.png"
+    var inputAudioDirPath = "${Utils.parentDir}/素材/CS-travelphrase-视频/travelphrase-f-1/audio"
     var inputAudioSortExcelPath =
-        "/Users/lingodeer-yxg/Downloads/CS-travelphrase-视频-前两课/travelphrase-f-1/cn-travelphrase-f-1文本.xlsx"
+        "${Utils.parentDir}/素材/CS-travelphrase-视频/travelphrase-f-1/cn-travelphrase-f-1文本.xlsx"
 
     private val repeatGameTimeFile get() = File("$workingTempDir/gap_time/$repeatGapTime.mp3")
     private val sentenceGapTimeFile get() = File("$workingTempDir/gap_time/$sentenceGapTime.mp3")
@@ -108,17 +108,17 @@ class FFmpegImgToVideoChineseTravel {
 //
 //        functionIndex = scanner.nextLine().trim().toInt()
 //
-//        println("请输入待处理的音频文件夹目录完整路径（路径内不能包含空格以及特殊字符，例如：/Users/lingodeer-yxg/Downloads/YT-input-audio）:")
+//        println("请输入待处理的音频文件夹目录完整路径（路径内不能包含空格以及特殊字符，例如：${Utils.parentDir}/素材/YT-input-audio）:")
 //        inputAudioDirPath = scanner.nextLine().trim()
 //        println("inputAudioDirPath = ${inputAudioDirPath}")
 //
 //        if (functionIndex == 2) {
-//            println("\n请输入待处理的图片文件夹目录完整路径（路径内不能包含空格以及特殊字符，例如：/Users/lingodeer-yxg/Downloads/YT-input-img）:")
+//            println("\n请输入待处理的图片文件夹目录完整路径（路径内不能包含空格以及特殊字符，例如：${Utils.parentDir}/素材/YT-input-img）:")
 //            inputAudioImgDirPath = scanner.nextLine().trim()
 //            println("inputAudioDirPath = ${inputAudioImgDirPath}")
 //        }
 //
-//        println("\n请输入待处理的音频排序Excel的完整路径（表格名称固定sorted-list，路径内不能包含空格以及特殊字符，例如：/Users/lingodeer-yxg/Downloads/Youtube句子301-1077.xlsx，如果没有直接回车，默认按照文件名称ID大小进行排序）:")
+//        println("\n请输入待处理的音频排序Excel的完整路径（表格名称固定sorted-list，路径内不能包含空格以及特殊字符，例如：${Utils.parentDir}/素材/Youtube句子301-1077.xlsx，如果没有直接回车，默认按照文件名称ID大小进行排序）:")
 //        inputAudioSortExcelPath = scanner.nextLine().trim()
 //        if (inputAudioSortExcelPath.isEmpty()) {
 //            println("排序路径为空，默认按照文件名称ID大小进行排序")
@@ -173,9 +173,9 @@ class FFmpegImgToVideoChineseTravel {
         val startTime = System.currentTimeMillis()
         val inputAudioImgDirPath = "$workingTempDir/output_img"
 
-        val ffprobe = FFprobe("$workingDir/library/ffprobe")
+        val ffprobe = FFprobe("ffprobe")
 
-        val cmdPath = "$workingDir/library/ffmpeg"
+        val cmdPath = "ffmpeg"
         val hanBrakePath = "$workingDir/library/HandBrakeCLI"
         val subList = sortedExcelDataList.subList(0, sortedExcelDataList.size)
         val audioFileList = subList.map { File("$workingTempDir/compressed_audio/${it.ID}.mp3") }.filter {
@@ -401,7 +401,7 @@ class FFmpegImgToVideoChineseTravel {
             }
         }
 
-        inputVideoList.append("file '/Users/lingodeer-yxg/Downloads/CS-travelphrase-视频-前两课/CS-Youtube-头尾视频/片头1-formated.mp4'")
+        inputVideoList.append("file '${Utils.parentDir}/素材/CS-travelphrase-视频/CS-Youtube-头尾视频/片头1-formated.mp4'")
         inputVideoList.append("\n")
 
         for (audioFile in audioFileList) {
@@ -411,7 +411,7 @@ class FFmpegImgToVideoChineseTravel {
             inputVideoList.append("\n")
         }
 
-        inputVideoList.append("file '/Users/lingodeer-yxg/Downloads/CS-travelphrase-视频-前两课/CS-Youtube-头尾视频/片尾1-formated.mp4'")
+        inputVideoList.append("file '${Utils.parentDir}/素材/CS-travelphrase-视频/CS-Youtube-头尾视频/片尾1-formated.mp4'")
         inputVideoList.append("\n")
 
         val inputVideoListFile = File("$workingTempDir/inputVideoList.txt").apply {
@@ -1057,7 +1057,7 @@ class FFmpegImgToVideoChineseTravel {
     }
 
     fun writeStartAndEnd() {
-        val cmdPath = "$workingDir/library/ffmpeg"
+        val cmdPath = "ffmpeg"
         val hanBrakePath = "$workingDir/library/HandBrakeCLI"
         var cmd = ""
         loop@ for (listFile in File("$workingDir/output/1-1077视频-已固定帧率").listFiles()) {

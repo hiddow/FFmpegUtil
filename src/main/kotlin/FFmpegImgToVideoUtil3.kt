@@ -77,8 +77,8 @@ class FFmpegImgToVideoUtil3 {
     var endSortIndex = 151
 
     var outputFileName = "output(1-150)"
-    private var inputAudioDirPath = "/Users/lingodeer-yxg/Desktop/视频课/素材/FD-1077/YT-Ref-compressed"
-    private var inputAudioSortExcelPath = "/Users/lingodeer-yxg/Desktop/视频课/素材/FD-1077/1077-with-Japanese(排序后).xlsx"
+    private var inputAudioDirPath = "${Utils.parentDir}/素材/FD-1077/YT-Ref-compressed"
+    private var inputAudioSortExcelPath = "${Utils.parentDir}/素材/FD-1077/1077-with-Japanese(排序后).xlsx"
 
     private val repeatGameTimeFile get() = File("$workingTempDir/gap_time/$repeatGapTime.mp3")
     private val sentenceGapTimeFile get() = File("$workingTempDir/gap_time/$sentenceGapTime.mp3")
@@ -91,7 +91,7 @@ class FFmpegImgToVideoUtil3 {
         println("protocol = $protocol")
         workingDir =
             if (isDebug) {
-                "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil"
+                "${Utils.parentDir}/FFmpegUtil"
             } else {
                 File(
                     FFmpegUtil::class.java.protectionDomain.codeSource.location
@@ -179,9 +179,9 @@ class FFmpegImgToVideoUtil3 {
         val startTime = System.currentTimeMillis()
         val inputAudioImgDirPath = "$workingTempDir/output_img"
 
-        val ffprobe = FFprobe("$workingDir/library/ffprobe")
+        val ffprobe = FFprobe("ffprobe")
 
-        val cmdPath = "$workingDir/library/ffmpeg"
+        val cmdPath = "ffmpeg"
         val hanBrakePath = "$workingDir/library/HandBrakeCLI"
         val subList = sortedExcelDataList.subList(startSortIndex - 1, endSortIndex - 1)
         val audioFileList = subList.map { File("$workingTempDir/compressed_audio/${it.ID}.mp3") }
@@ -433,9 +433,9 @@ class FFmpegImgToVideoUtil3 {
         }
 
         if (isEnglish) {
-            inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/FD-1077/片头片尾/1077片头-英-formatted.mp4'")
+            inputVideoList.append("file '${Utils.parentDir}/素材/FD-1077/片头片尾/1077片头-英-formatted.mp4'")
         } else {
-            inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/FD-1077/片头片尾/FD片头-新日语介绍-1-formatted.mp4'")
+            inputVideoList.append("file '${Utils.parentDir}/素材/FD-1077/片头片尾/FD片头-新日语介绍-1-formatted.mp4'")
         }
         inputVideoList.append("\n")
 
@@ -446,9 +446,9 @@ class FFmpegImgToVideoUtil3 {
             inputVideoList.append("\n")
         }
         if (isEnglish) {
-            inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/FD-1077/片头片尾/新FD片尾-英.mp4'")
+            inputVideoList.append("file '${Utils.parentDir}/素材/FD-1077/片头片尾/新FD片尾-英.mp4'")
         } else {
-            inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/FD-1077/片头片尾/新FD片尾-日-1-formatted.mp4'")
+            inputVideoList.append("file '${Utils.parentDir}/素材/FD-1077/片头片尾/新FD片尾-日-1-formatted.mp4'")
         }
         inputVideoList.append("\n")
 
@@ -504,7 +504,7 @@ class FFmpegImgToVideoUtil3 {
             runBlocking {
                 for (sortedExcelData in sortedExcelDataList) {
                     val localAudioFile =
-                        File("/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/aws-audio/output(1-1077)-EN-JP.mp4/" + sortedExcelData.ID + "-jp.mp3")
+                        File("${Utils.parentDir}/FFmpegUtil/aws-audio/output(1-1077)-EN-JP.mp4/" + sortedExcelData.ID + "-jp.mp3")
                     launch {
                         getMp3AndJson(
                             sortedExcelData.TRANS_JP,
@@ -545,7 +545,7 @@ class FFmpegImgToVideoUtil3 {
                 }
 
                 launch(Dispatchers.IO) {
-                    val slowAudioFile = File("/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/aws-audio/output(1-1077)-EN-JP.mp4/${(listFile.name.split(".")[0].toInt())}-jp.mp3")
+                    val slowAudioFile = File("${Utils.parentDir}/FFmpegUtil/aws-audio/output(1-1077)-EN-JP.mp4/${(listFile.name.split(".")[0].toInt())}-jp.mp3")
                     val tempOutputFile =
                         File("$workingTempDir/compressed_audio/${(slowAudioFile.name.split(".")[0])}-temp.mp3").apply {
                             if (!this.parentFile.exists())
@@ -1037,7 +1037,7 @@ class FFmpegImgToVideoUtil3 {
     }
 
     fun writeStartAndEnd() {
-        val cmdPath = "$workingDir/library/ffmpeg"
+        val cmdPath = "ffmpeg"
         val hanBrakePath = "$workingDir/library/HandBrakeCLI"
         var cmd = ""
         loop@ for (listFile in File("$workingDir/output/1-1077视频-已固定帧率").listFiles()) {
@@ -1092,7 +1092,7 @@ class FFmpegImgToVideoUtil3 {
             }
         }
 
-        Runtime.getRuntime().exec("/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/final.sh").apply {
+        Runtime.getRuntime().exec("${Utils.parentDir}/FFmpegUtil/final.sh").apply {
             for (readLine in InputStreamReader(this.inputStream).readLines()) {
                 println(readLine)
             }

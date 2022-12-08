@@ -33,11 +33,11 @@ fun main(args: Array<String>) {
             val ffmpegimgtovideoutilJP = FFmpegImgToVideoKoreanTravel()
             for (fFmpegImgToVideoUtil3 in arrayOf(ffmpegimgtovideoutilEN, ffmpegimgtovideoutilJP)) {
                 fFmpegImgToVideoUtil3.inputAudioDirPath =
-                    "/Users/yxg/Documents/from-iMac/视频课/素材/YT_KR-EN词汇/YT_KR-EN词汇-$nameEndFix-音频"
+                    "${Utils.parentDir}/素材/YT_KR-EN词汇/YT_KR-EN词汇-$nameEndFix-音频"
                 fFmpegImgToVideoUtil3.inputAudioSortExcelPath =
-                    "/Users/yxg/Documents/from-iMac/视频课/素材/YT_KR-EN词汇/YT_KR-EN词汇-$nameEndFix.xlsx"
+                    "${Utils.parentDir}/素材/YT_KR-EN词汇/YT_KR-EN词汇-$nameEndFix.xlsx"
                 fFmpegImgToVideoUtil3.bgPicPath =
-                    "/Users/yxg/Documents/from-iMac/视频课/素材/YT_KR-EN词汇/YT_韩语词汇背景/背景4.png"
+                    "${Utils.parentDir}/素材/YT_KR-EN词汇/YT_韩语词汇背景/背景4.png"
             }
 
             launch(Dispatchers.IO) {
@@ -94,7 +94,7 @@ class FFmpegImgToVideoKoreanTravel {
         println("protocol = $protocol")
         workingDir =
             if (isDebug) {
-                "/Users/yxg/Documents/from-iMac/视频课/FFmpegUtil"
+                "${Utils.parentDir}/FFmpegUtil"
             } else {
                 File(
                     FFmpegUtil::class.java.protectionDomain.codeSource.location
@@ -433,7 +433,7 @@ class FFmpegImgToVideoKoreanTravel {
             }
         }
 
-        inputVideoList.append("file '/Users/yxg/Documents/from-iMac/视频课/素材/LD-TravelPhrase/JP/CS-Youtube-头尾视频/Travel-JP-片头-formatted.mp4'")
+        inputVideoList.append("file '${Utils.parentDir}/素材/LD-TravelPhrase/JP/CS-Youtube-头尾视频/Travel-JP-片头-formatted.mp4'")
         inputVideoList.append("\n")
 
         for (audioFile in audioFileList) {
@@ -443,7 +443,7 @@ class FFmpegImgToVideoKoreanTravel {
             inputVideoList.append("\n")
         }
 
-        inputVideoList.append("file '/Users/yxg/Documents/from-iMac/视频课/素材/LD-TravelPhrase/JP/CS-Youtube-头尾视频/Travel-JP-片尾-formatted.mp4'")
+        inputVideoList.append("file '${Utils.parentDir}/素材/LD-TravelPhrase/JP/CS-Youtube-头尾视频/Travel-JP-片尾-formatted.mp4'")
         inputVideoList.append("\n")
 
         val inputVideoListFile = File("$workingTempDir/inputVideoList.txt").apply {

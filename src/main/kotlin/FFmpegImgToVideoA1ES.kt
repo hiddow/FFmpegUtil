@@ -62,8 +62,8 @@ class FFmpegImgToVideoA1ES {
 
     var awsOutFileDirName = ""
     var outputFileName = "output(1-150)"
-    private var inputAudioDirPath = "/Users/yxg/Documents/from-iMac/视频课/素材/A1西语/A1VOCAB音频汇总"
-    private var inputAudioSortExcelPath = "/Users/yxg/Documents/from-iMac/视频课/素材/A1西语/A1VOCAB760西语翻译.xlsx"
+    private var inputAudioDirPath = "${Utils.parentDir}/素材/A1西语/A1VOCAB音频汇总"
+    private var inputAudioSortExcelPath = "${Utils.parentDir}/素材/A1西语/A1VOCAB760西语翻译.xlsx"
 
     private val repeatGameTimeFile get() = File("$workingTempDir/gap_time/$repeatGapTime.mp3")
     private val sentenceGapTimeFile get() = File("$workingTempDir/gap_time/$sentenceGapTime.mp3")
@@ -76,7 +76,7 @@ class FFmpegImgToVideoA1ES {
         println("protocol = $protocol")
         workingDir =
             if (isDebug) {
-                "/Users/yxg/Documents/from-iMac/视频课/FFmpegUtil"
+                "${Utils.parentDir}/FFmpegUtil"
             } else {
                 File(
                     FFmpegUtil::class.java.protectionDomain.codeSource.location
@@ -417,9 +417,9 @@ class FFmpegImgToVideoA1ES {
         }
 
         if (isEnglish) {
-            inputVideoList.append("file '/Users/yxg/Documents/from-iMac/视频课/素材/A1西语/片头片尾/FD片头-新英语介绍-formatted.mp4'")
+            inputVideoList.append("file '${Utils.parentDir}/素材/A1西语/片头片尾/FD片头-新英语介绍-formatted.mp4'")
         } else {
-            inputVideoList.append("file '/Users/yxg/Documents/from-iMac/视频课/素材/A1西语/片头片尾/FD片头-西语介绍-formatted.mp4'")
+            inputVideoList.append("file '${Utils.parentDir}/素材/A1西语/片头片尾/FD片头-西语介绍-formatted.mp4'")
         }
         inputVideoList.append("\n")
 
@@ -431,9 +431,9 @@ class FFmpegImgToVideoA1ES {
         }
 
         if (isEnglish) {
-            inputVideoList.append("file '/Users/yxg/Documents/from-iMac/视频课/素材/A1西语/片头片尾/新FD片尾-英-formatted.mp4'")
+            inputVideoList.append("file '${Utils.parentDir}/素材/A1西语/片头片尾/新FD片尾-英-formatted.mp4'")
         } else {
-            inputVideoList.append("file '/Users/yxg/Documents/from-iMac/视频课/素材/A1西语/片头片尾/FD片尾-西-formatted.mp4'")
+            inputVideoList.append("file '${Utils.parentDir}/素材/A1西语/片头片尾/FD片尾-西-formatted.mp4'")
         }
         inputVideoList.append("\n")
 
@@ -587,8 +587,8 @@ class FFmpegImgToVideoA1ES {
 
     private fun outputImg(index: Int, sortedExcelData: SortedExcelData2) {
 //        bgIndex = index % 7 + 1
-        val bgImg = "/Users/yxg/Documents/from-iMac/视频课/素材/A1西语/背景图/A1背景图.png"
-        val listenImg = "/Users/yxg/Documents/from-iMac/视频课/素材/A1西语/背景图/新listen图.png"
+        val bgImg = "${Utils.parentDir}/素材/A1西语/背景图/A1背景图.png"
+        val listenImg = "${Utils.parentDir}/素材/A1西语/背景图/新listen图.png"
 
         val font = Font("Helvetica", Font.PLAIN, 92)
         val indexFont = Font("Arial Rounded MT Bold", Font.PLAIN, 41)

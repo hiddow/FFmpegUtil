@@ -64,9 +64,9 @@ class FFmpegImgToVideoA2 {
 
     var awsOutFileDirName = ""
     var outputFileName = ""
-    private var inputAudioDirPath = "/Users/lingodeer-yxg/Desktop/视频课/素材/A2系列/句子列表与音频/A2音频汇总"
+    private var inputAudioDirPath = "${Utils.parentDir}/素材/A2系列/句子列表与音频/A2音频汇总"
     private var inputAudioSortExcelPath =
-        "/Users/lingodeer-yxg/Desktop/视频课/素材/A2系列/句子列表与音频/A2VOCAB1452英日句子.xlsx"
+        "${Utils.parentDir}/素材/A2系列/句子列表与音频/A2VOCAB1452英日句子.xlsx"
 
     private val repeatGameTimeFile get() = File("$workingTempDir/gap_time/$repeatGapTime.mp3")
     private val sentenceGapTimeFile get() = File("$workingTempDir/gap_time/$sentenceGapTime.mp3")
@@ -79,7 +79,7 @@ class FFmpegImgToVideoA2 {
         println("protocol = $protocol")
         workingDir =
             if (isDebug) {
-                "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil"
+                "${Utils.parentDir}/FFmpegUtil"
             } else {
                 File(
                     FFmpegUtil::class.java.protectionDomain.codeSource.location
@@ -167,9 +167,9 @@ class FFmpegImgToVideoA2 {
         val startTime = System.currentTimeMillis()
         val inputAudioImgDirPath = "$workingTempDir/output_img"
 
-        val ffprobe = FFprobe("$workingDir/library/ffprobe")
+        val ffprobe = FFprobe("ffprobe")
 
-        val cmdPath = "$workingDir/library/ffmpeg"
+        val cmdPath = "ffmpeg"
         val hanBrakePath = "$workingDir/library/HandBrakeCLI"
         val subList = sortedExcelDataList.subList(0, sortedExcelDataList.size)
         val audioFileList = subList.map { File("$workingTempDir/compressed_audio/yt-en-a2vocab-${it.ID}.mp3") }
@@ -420,9 +420,9 @@ class FFmpegImgToVideoA2 {
         }
 
         if (isEnglish) {
-            inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/A2系列/片头片尾/FD片头-新英语介绍-formatted.mp4'")
+            inputVideoList.append("file '${Utils.parentDir}/素材/A2系列/片头片尾/FD片头-新英语介绍-formatted.mp4'")
         } else {
-            inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/A2系列/片头片尾/FD片头-新日语介绍-formatted.mp4'")
+            inputVideoList.append("file '${Utils.parentDir}/素材/A2系列/片头片尾/FD片头-新日语介绍-formatted.mp4'")
         }
         inputVideoList.append("\n")
 
@@ -434,9 +434,9 @@ class FFmpegImgToVideoA2 {
         }
 
         if (isEnglish) {
-            inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/A2系列/片头片尾/新FD片尾-英-formatted.mp4'")
+            inputVideoList.append("file '${Utils.parentDir}/素材/A2系列/片头片尾/新FD片尾-英-formatted.mp4'")
         } else {
-            inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/A2系列/片头片尾/新FD片尾-日-formatted.mp4'")
+            inputVideoList.append("file '${Utils.parentDir}/素材/A2系列/片头片尾/新FD片尾-日-formatted.mp4'")
         }
         inputVideoList.append("\n")
 
@@ -591,8 +591,8 @@ class FFmpegImgToVideoA2 {
 
     private fun outputImg(index: Int, sortedExcelData: SortedExcelData2) {
 //        bgIndex = index % 7 + 1
-        val bgImg = "/Users/lingodeer-yxg/Desktop/视频课/素材/A2系列/背景图/A2背景图(1920x1080).png"
-        val listenImg = "/Users/lingodeer-yxg/Desktop/视频课/素材/A2系列/背景图/Listen图(1920x1080).png"
+        val bgImg = "${Utils.parentDir}/素材/A2系列/背景图/A2背景图(1920x1080).png"
+        val listenImg = "${Utils.parentDir}/素材/A2系列/背景图/Listen图(1920x1080).png"
 
         val font = Font("Helvetica", Font.PLAIN, 92)
         val indexFont = Font("Arial Rounded MT Bold", Font.PLAIN, 41)

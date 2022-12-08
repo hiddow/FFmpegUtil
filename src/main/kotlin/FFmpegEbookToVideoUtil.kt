@@ -59,8 +59,8 @@ class FFmpegEbookToVideoUtil {
     var workingTempDir = ""
     var bookId = ""
 
-    val ffprobe get() = FFprobe("$workingDir/library/ffprobe")
-    val cmdPath get() = "$workingDir/library/ffmpeg"
+    val ffprobe get() = FFprobe("ffprobe")
+    val cmdPath get() = "ffmpeg"
     val hanBrakePath get() = "$workingDir/library/HandBrakeCLI"
 
     init {
@@ -71,7 +71,7 @@ class FFmpegEbookToVideoUtil {
         println("protocol = $protocol")
         workingDir =
             if (isDebug) {
-                "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil"
+                "${Utils.parentDir}/FFmpegUtil"
             } else {
                 File(
                     FFmpegUtil::class.java.protectionDomain.codeSource.location
@@ -189,7 +189,7 @@ class FFmpegEbookToVideoUtil {
     ): File {
         val outputFileName = "book-$bookId-$locateCode.mp4"
 
-        inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/ebook/片头片尾/enpal-片头-new.mp4'")
+        inputVideoList.append("file '${Utils.parentDir}/素材/ebook/片头片尾/enpal-片头-new.mp4'")
         inputVideoList.append("\n")
 
         for (audioFile in videoFileList) {
@@ -197,7 +197,7 @@ class FFmpegEbookToVideoUtil {
             inputVideoList.append("\n")
         }
 
-        inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/ebook/片头片尾/enpal-片尾-new-${locateCode}.mp4'")
+        inputVideoList.append("file '${Utils.parentDir}/素材/ebook/片头片尾/enpal-片尾-new-${locateCode}.mp4'")
         inputVideoList.append("\n")
 
         val inputVideoListFile = File("$workingTempDir/inputVideoList-$locateCode.txt").apply {
@@ -362,7 +362,7 @@ class FFmpegEbookToVideoUtil {
         val outImgFileList = ArrayList<File>()
 
         textList.forEachIndexed { imgIndex, textToDraw ->
-            ///Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/background_img/ebook/YT-story模板/005.png
+            //${Utils.parentDir}/FFmpegUtil/background_img/ebook/YT-story模板/005.png
             val bgImg = "$workingDir/background_img/ebook/YT-story模板/$bookId.png"
 
             IJ.openImage(bgImg).processor.apply {
@@ -696,7 +696,7 @@ class FFmpegEbookToVideoUtil {
         coverFileName: String,
         coverDuration: Int
     ): File {
-        ///Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil/background_img/ebook/YT-story标题页模板/005.png
+        //${Utils.parentDir}/FFmpegUtil/background_img/ebook/YT-story标题页模板/005.png
         val bgImg = "$workingDir/background_img/ebook/YT-story标题页模板/$bookId.png"
         val font = Font("Playfair Display", Font.PLAIN, 105)
 

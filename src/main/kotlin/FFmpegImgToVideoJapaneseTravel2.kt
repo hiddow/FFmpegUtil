@@ -30,11 +30,11 @@ fun main(args: Array<String>) {
         runBlocking {
             val ffmpegimgtovideoutilEN = FFmpegImgToVideoJapaneseTravel2()
             ffmpegimgtovideoutilEN.inputAudioDirPath =
-                "/Users/lingodeer-yxg/Desktop/视频课/素材/LD-TravelPhrase/JP_2/JP_${nameEndFix}/JP_${nameEndFix}音频"
+                "${Utils.parentDir}/素材/LD-TravelPhrase/JP_2/JP_${nameEndFix}/JP_${nameEndFix}音频"
             ffmpegimgtovideoutilEN.inputAudioSortExcelPath =
-                "/Users/lingodeer-yxg/Desktop/视频课/素材/LD-TravelPhrase/JP_2/JP_${nameEndFix}/JP_${nameEndFix}文本.xlsx"
+                "${Utils.parentDir}/素材/LD-TravelPhrase/JP_2/JP_${nameEndFix}/JP_${nameEndFix}文本.xlsx"
             ffmpegimgtovideoutilEN.bgPicPath =
-                "/Users/lingodeer-yxg/Desktop/视频课/素材/LD-TravelPhrase/JP_2/JP_${nameEndFix}/JP_${nameEndFix}背景图.png"
+                "${Utils.parentDir}/素材/LD-TravelPhrase/JP_2/JP_${nameEndFix}/JP_${nameEndFix}背景图.png"
 
             ffmpegimgtovideoutilEN.apply {
                 when (nameEndFix) {
@@ -175,7 +175,7 @@ class FFmpegImgToVideoJapaneseTravel2 {
         println("protocol = $protocol")
         workingDir =
             if (isDebug) {
-                "/Users/lingodeer-yxg/Desktop/视频课/FFmpegUtil"
+                "${Utils.parentDir}/FFmpegUtil"
             } else {
                 File(
                     FFmpegUtil::class.java.protectionDomain.codeSource.location
@@ -282,9 +282,9 @@ class FFmpegImgToVideoJapaneseTravel2 {
         val startTime = System.currentTimeMillis()
         val inputAudioImgDirPath = "$workingTempDir/output_img"
 
-        val ffprobe = FFprobe("$workingDir/library/ffprobe")
+        val ffprobe = FFprobe("ffprobe")
 
-        val cmdPath = "$workingDir/library/ffmpeg"
+        val cmdPath = "ffmpeg"
         val hanBrakePath = "$workingDir/library/HandBrakeCLI"
         val subList = sortedExcelDataList.subList(0, sortedExcelDataList.size)
 
@@ -522,7 +522,7 @@ class FFmpegImgToVideoJapaneseTravel2 {
             }
         }
 
-        inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/LD-TravelPhrase/JP/CS-Youtube-头尾视频/Travel-JP-片头-formatted.mp4'")
+        inputVideoList.append("file '${Utils.parentDir}/素材/LD-TravelPhrase/JP/CS-Youtube-头尾视频/Travel-JP-片头-formatted.mp4'")
         inputVideoList.append("\n")
 
         for (audioFile in audioFileList) {
@@ -532,7 +532,7 @@ class FFmpegImgToVideoJapaneseTravel2 {
             inputVideoList.append("\n")
         }
 
-        inputVideoList.append("file '/Users/lingodeer-yxg/Desktop/视频课/素材/LD-TravelPhrase/JP/CS-Youtube-头尾视频/Travel-JP-片尾-formatted.mp4'")
+        inputVideoList.append("file '${Utils.parentDir}/素材/LD-TravelPhrase/JP/CS-Youtube-头尾视频/Travel-JP-片尾-formatted.mp4'")
         inputVideoList.append("\n")
 
         val inputVideoListFile = File("$workingTempDir/inputVideoList.txt").apply {
